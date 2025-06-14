@@ -23,8 +23,8 @@ public class CategoryController : ControllerBase
     public async Task<ActionResult<List<CategoryDTO>>> GetAll()
     {
         List<Category> categories = await _context.Categories
-            .AsNoTracking()
-            .OrderBy(c => c.Name)
+            .AsNoTracking()         // Improves performance by disabling change tracking for read-only query
+            .OrderBy(c => c.Id) 
             .ToListAsync();
 
         List<CategoryDTO> dtos = categories
