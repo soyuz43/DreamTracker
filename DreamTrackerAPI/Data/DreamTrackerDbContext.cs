@@ -69,7 +69,8 @@ public class DreamTrackerDbContext : IdentityDbContext<IdentityUser>
             new Category { Id = 4, Name = "Recurring Dreams" },
             new Category { Id = 5, Name = "Flying Dreams" },
             new Category { Id = 6, Name = "Chase Dreams" },
-            new Category { Id = 7, Name = "Prophetic Dreams" }
+            new Category { Id = 7, Name = "Prophetic Dreams" },
+            new Category { Id = 8, Name = "Surreal & Symbolic Dreams" }
         });
 
         // ─── Tags (emotional context) ─────────────────────────────────────────────
@@ -83,62 +84,81 @@ public class DreamTrackerDbContext : IdentityDbContext<IdentityUser>
             new Tag { Id = 6, Name = "Love" },
             new Tag { Id = 7, Name = "Sadness" },
             new Tag { Id = 8, Name = "Anxiety" },
-            new Tag { Id = 9, Name = "Wonder" }
+            new Tag { Id = 9, Name = "Wonder" },
+            new Tag { Id = 10, Name = "Surreal"},
+            new Tag { Id = 11, Name = "Absurdity"}
         });
 
         // ─── Dreams ────────────────────────────────────────────────────────────────
         modelBuilder.Entity<Dream>().HasData(new Dream[]
         {
-            new Dream
-            {
-                Id = 1,
-                UserProfileId = 1,
-                CategoryId = 1,
-                Title = "Dream within a dream",
-                Content = "I was dreaming that I was dreaming. Layers upon layers.",
-                IsPublic = true,
-                CreatedOn = new DateTime(2024, 10, 1)
-            },
-            new Dream
-            {
-                Id = 2,
-                UserProfileId = 1,
-                CategoryId = 2,
-                Title = "Falling endlessly",
-                Content = "Just falling through darkness. Never landing.",
-                IsPublic = false,
-                CreatedOn = new DateTime(2024, 10, 2)
-            },
-            new Dream
-            {
-                Id = 3,
-                UserProfileId = 1,
-                CategoryId = 4,
-                Title = "Back in high school again",
-                Content = "Taking the same exam over and over.",
-                IsPublic = false,
-                CreatedOn = new DateTime(2024, 10, 3)
-            },
-            new Dream
-            {
-                Id = 4,
-                UserProfileId = 1,
-                CategoryId = 5,
-                Title = "Soaring over cities",
-                Content = "Flying without effort, seeing the skyline shift below.",
-                IsPublic = true,
-                CreatedOn = new DateTime(2024, 10, 4)
-            },
-            new Dream
-            {
-                Id = 5,
-                UserProfileId = 1,
-                CategoryId = 6,
-                Title = "Being chased but never caught",
-                Content = "The more I run, the slower I move. I wake up breathless.",
-                IsPublic = false,
-                CreatedOn = new DateTime(2024, 10, 5)
-            }
+        new Dream
+        {
+            Id = 1,
+            UserProfileId = 1,
+            CategoryId = 1,
+            Title = "Dream within a dream",
+            Content = "I was dreaming that I was dreaming. Layers upon layers.",
+            IsPublic = true,
+            ShowAuthor = false,
+            CreatedOn = new DateTime(2024, 10, 1)
+        },
+        new Dream
+        {
+            Id = 2,
+            UserProfileId = 1,
+            CategoryId = 2,
+            Title = "Falling endlessly",
+            Content = "Just falling through darkness. Never landing.",
+            IsPublic = false,
+            ShowAuthor = false,
+            CreatedOn = new DateTime(2024, 10, 2)
+        },
+        new Dream
+        {
+            Id = 3,
+            UserProfileId = 1,
+            CategoryId = 4,
+            Title = "Back in high school again",
+            Content = "Taking the same exam over and over.",
+            IsPublic = false,
+            ShowAuthor = false,
+            CreatedOn = new DateTime(2024, 10, 3)
+        },
+        new Dream
+        {
+            Id = 4,
+            UserProfileId = 1,
+            CategoryId = 5,
+            Title = "Soaring over cities",
+            Content = "Flying without effort, seeing the skyline shift below.",
+            IsPublic = true,
+            ShowAuthor = true,
+            CreatedOn = new DateTime(2024, 10, 4)
+        },
+        new Dream
+        {
+            Id = 5,
+            UserProfileId = 1,
+            CategoryId = 6,
+            Title = "Being chased but never caught",
+            Content = "The more I run, the slower I move. I wake up breathless.",
+            IsPublic = false,
+            ShowAuthor = false,
+            CreatedOn = new DateTime(2024, 10, 5)
+        },
+        new Dream
+        {
+            Id = 6,
+            UserProfileId = 1,
+            CategoryId = 8,
+            Title = "My mother was a fish",
+            Content = "She swam silently through the kitchen tiles. I think I’ve been reading too much Faulkner.",
+            IsPublic = true,
+            ShowAuthor = false,
+            CreatedOn = new DateTime(2024, 10, 6)
+        }
+        
         });
 
         // ─── DreamTags (join table relations) ────────────────────────────────────
@@ -152,7 +172,11 @@ public class DreamTrackerDbContext : IdentityDbContext<IdentityUser>
             new DreamTag { DreamId = 4, TagId = 1 }, // Joy
             new DreamTag { DreamId = 4, TagId = 9 }, // Wonder
             new DreamTag { DreamId = 5, TagId = 2 }, // Fear
-            new DreamTag { DreamId = 5, TagId = 5 }  // Anger
+            new DreamTag { DreamId = 5, TagId = 5 },  // Anger
+            new DreamTag { DreamId = 6, TagId = 4 }, // Confusion
+            new DreamTag { DreamId = 6, TagId = 10 }, // Surreal
+            new DreamTag { DreamId = 6, TagId = 11 }, // Absurdity
+            new DreamTag { DreamId = 6, TagId = 7 } // Sadness (subtle grief under the joke)
         });
 
         modelBuilder.Entity<DreamTag>().HasKey(dt => new { dt.DreamId, dt.TagId });

@@ -1,13 +1,21 @@
-namespace DreamTrackerAPI.Models.DTOs;
+using System;
+using System.Collections.Generic;
 
-public class DreamDTO
+namespace DreamTrackerAPI.Models.DTOs
 {
-    public int Id { get; set; }
-    public string? Title { get; set; }
-    public string? Content { get; set; }
-    public bool IsPublic { get; set; }
-    public DateTime CreatedOn { get; set; }
+    public class DreamDTO
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = null!;
+        public string Content { get; set; } = null!;
+        public bool IsPublic { get; set; }
+        public DateTime CreatedOn { get; set; }
 
-    public Category? Category { get; set; }
-    public List<Tag>? Tags { get; set; }
+        // Optional attribution; defaults to "Anonymous" unless ShowAuthor is true
+        public string PublishedBy { get; set; } = null!;
+
+        // Nested DTOs for related entities
+        public CategoryDTO Category { get; set; } = null!;
+        public List<TagDTO> Tags { get; set; } = new();
+    }
 }

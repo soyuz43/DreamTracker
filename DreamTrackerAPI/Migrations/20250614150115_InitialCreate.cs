@@ -217,6 +217,7 @@ namespace DreamTrackerAPI.Migrations
                     Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Content = table.Column<string>(type: "text", nullable: false),
                     IsPublic = table.Column<bool>(type: "boolean", nullable: false),
+                    ShowAuthor = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -268,7 +269,7 @@ namespace DreamTrackerAPI.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", 0, "d555d6f5-157c-4b2b-afba-9a87e1e4c208", "admina@strator.comx", true, false, null, "ADMINA@STRATOR.COMX", "ADMINISTRATOR", "AQAAAAIAAYagAAAAEFnlslSvE7M+oc8ZvsoDD8X4A15o8kykunIFLe8tcntsvheuJwwI7DCdamaX47mlhw==", null, false, "08b6cbd5-8c1a-43e4-a4dd-9027eeb7d335", false, "Administrator" });
+                values: new object[] { "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", 0, "268e52b7-8f86-4d56-b70b-aad7040bda2a", "admina@strator.comx", true, false, null, "ADMINA@STRATOR.COMX", "ADMINISTRATOR", "AQAAAAIAAYagAAAAELKhYUgjP90JThAxRZYsqcGeaXPSe6ptF5ULb5NTkG88EvQm+uEzDkVCA0njKLu3Lg==", null, false, "b0650f7d-d68f-44f0-879c-1b321d3afef3", false, "Administrator" });
 
             migrationBuilder.InsertData(
                 table: "Categories",
@@ -281,7 +282,8 @@ namespace DreamTrackerAPI.Migrations
                     { 4, "Recurring Dreams" },
                     { 5, "Flying Dreams" },
                     { 6, "Chase Dreams" },
-                    { 7, "Prophetic Dreams" }
+                    { 7, "Prophetic Dreams" },
+                    { 8, "Surreal & Symbolic Dreams" }
                 });
 
             migrationBuilder.InsertData(
@@ -297,7 +299,9 @@ namespace DreamTrackerAPI.Migrations
                     { 6, "Love" },
                     { 7, "Sadness" },
                     { 8, "Anxiety" },
-                    { 9, "Wonder" }
+                    { 9, "Wonder" },
+                    { 10, "Surreal" },
+                    { 11, "Absurdity" }
                 });
 
             migrationBuilder.InsertData(
@@ -312,14 +316,15 @@ namespace DreamTrackerAPI.Migrations
 
             migrationBuilder.InsertData(
                 table: "Dreams",
-                columns: new[] { "Id", "CategoryId", "Content", "CreatedOn", "IsPublic", "Title", "UserProfileId" },
+                columns: new[] { "Id", "CategoryId", "Content", "CreatedOn", "IsPublic", "ShowAuthor", "Title", "UserProfileId" },
                 values: new object[,]
                 {
-                    { 1, 1, "I was dreaming that I was dreaming. Layers upon layers.", new DateTime(2024, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Dream within a dream", 1 },
-                    { 2, 2, "Just falling through darkness. Never landing.", new DateTime(2024, 10, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Falling endlessly", 1 },
-                    { 3, 4, "Taking the same exam over and over.", new DateTime(2024, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Back in high school again", 1 },
-                    { 4, 5, "Flying without effort, seeing the skyline shift below.", new DateTime(2024, 10, 4, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "Soaring over cities", 1 },
-                    { 5, 6, "The more I run, the slower I move. I wake up breathless.", new DateTime(2024, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Being chased but never caught", 1 }
+                    { 1, 1, "I was dreaming that I was dreaming. Layers upon layers.", new DateTime(2024, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), true, false, "Dream within a dream", 1 },
+                    { 2, 2, "Just falling through darkness. Never landing.", new DateTime(2024, 10, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, "Falling endlessly", 1 },
+                    { 3, 4, "Taking the same exam over and over.", new DateTime(2024, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, "Back in high school again", 1 },
+                    { 4, 5, "Flying without effort, seeing the skyline shift below.", new DateTime(2024, 10, 4, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Soaring over cities", 1 },
+                    { 5, 6, "The more I run, the slower I move. I wake up breathless.", new DateTime(2024, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, "Being chased but never caught", 1 },
+                    { 6, 8, "She swam silently through the kitchen tiles. I think I’ve been reading too much Faulkner.", new DateTime(2024, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), true, false, "My mother was a fish", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -335,7 +340,11 @@ namespace DreamTrackerAPI.Migrations
                     { 4, 1 },
                     { 4, 9 },
                     { 5, 2 },
-                    { 5, 5 }
+                    { 5, 5 },
+                    { 6, 4 },
+                    { 6, 7 },
+                    { 6, 10 },
+                    { 6, 11 }
                 });
 
             migrationBuilder.CreateIndex(
