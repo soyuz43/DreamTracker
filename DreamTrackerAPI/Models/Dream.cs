@@ -22,7 +22,8 @@ public class Dream
     public string? Content { get; set; }
 
     public bool IsPublic { get; set; }
-
+    public bool ShowAuthor { get; set; } = false;
+    
     public DateTime CreatedOn { get; set; }
 
     public UserProfile? UserProfile { get; set; }

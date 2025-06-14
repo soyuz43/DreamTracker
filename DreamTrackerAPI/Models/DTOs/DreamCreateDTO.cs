@@ -16,5 +16,7 @@ public class DreamCreateDTO
 
     public bool IsPublic { get; set; }
 
+    public bool ShowAuthor { get; set; } = false;
+
     public List<int> TagIds { get; set; } = new List<int>();
 }

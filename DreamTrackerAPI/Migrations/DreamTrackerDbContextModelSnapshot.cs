@@ -74,6 +74,11 @@ namespace DreamTrackerAPI.Migrations
                         {
                             Id = 7,
                             Name = "Prophetic Dreams"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Surreal & Symbolic Dreams"
                         });
                 });
 
@@ -96,6 +101,9 @@ namespace DreamTrackerAPI.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("ShowAuthor")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Title")
@@ -122,6 +130,7 @@ namespace DreamTrackerAPI.Migrations
                             Content = "I was dreaming that I was dreaming. Layers upon layers.",
                             CreatedOn = new DateTime(2024, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsPublic = true,
+                            ShowAuthor = false,
                             Title = "Dream within a dream",
                             UserProfileId = 1
                         },
@@ -132,6 +141,7 @@ namespace DreamTrackerAPI.Migrations
                             Content = "Just falling through darkness. Never landing.",
                             CreatedOn = new DateTime(2024, 10, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsPublic = false,
+                            ShowAuthor = false,
                             Title = "Falling endlessly",
                             UserProfileId = 1
                         },
@@ -142,6 +152,7 @@ namespace DreamTrackerAPI.Migrations
                             Content = "Taking the same exam over and over.",
                             CreatedOn = new DateTime(2024, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsPublic = false,
+                            ShowAuthor = false,
                             Title = "Back in high school again",
                             UserProfileId = 1
                         },
@@ -152,6 +163,7 @@ namespace DreamTrackerAPI.Migrations
                             Content = "Flying without effort, seeing the skyline shift below.",
                             CreatedOn = new DateTime(2024, 10, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsPublic = true,
+                            ShowAuthor = true,
                             Title = "Soaring over cities",
                             UserProfileId = 1
                         },
@@ -162,7 +174,19 @@ namespace DreamTrackerAPI.Migrations
                             Content = "The more I run, the slower I move. I wake up breathless.",
                             CreatedOn = new DateTime(2024, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsPublic = false,
+                            ShowAuthor = false,
                             Title = "Being chased but never caught",
+                            UserProfileId = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryId = 8,
+                            Content = "She swam silently through the kitchen tiles. I think I’ve been reading too much Faulkner.",
+                            CreatedOn = new DateTime(2024, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsPublic = true,
+                            ShowAuthor = false,
+                            Title = "My mother was a fish",
                             UserProfileId = 1
                         });
                 });
@@ -226,6 +250,26 @@ namespace DreamTrackerAPI.Migrations
                         {
                             DreamId = 5,
                             TagId = 5
+                        },
+                        new
+                        {
+                            DreamId = 6,
+                            TagId = 4
+                        },
+                        new
+                        {
+                            DreamId = 6,
+                            TagId = 10
+                        },
+                        new
+                        {
+                            DreamId = 6,
+                            TagId = 11
+                        },
+                        new
+                        {
+                            DreamId = 6,
+                            TagId = 7
                         });
                 });
 
@@ -291,6 +335,16 @@ namespace DreamTrackerAPI.Migrations
                         {
                             Id = 9,
                             Name = "Wonder"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Surreal"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "Absurdity"
                         });
                 });
 
@@ -458,15 +512,15 @@ namespace DreamTrackerAPI.Migrations
                         {
                             Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d555d6f5-157c-4b2b-afba-9a87e1e4c208",
+                            ConcurrencyStamp = "268e52b7-8f86-4d56-b70b-aad7040bda2a",
                             Email = "admina@strator.comx",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMINA@STRATOR.COMX",
                             NormalizedUserName = "ADMINISTRATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFnlslSvE7M+oc8ZvsoDD8X4A15o8kykunIFLe8tcntsvheuJwwI7DCdamaX47mlhw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELKhYUgjP90JThAxRZYsqcGeaXPSe6ptF5ULb5NTkG88EvQm+uEzDkVCA0njKLu3Lg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "08b6cbd5-8c1a-43e4-a4dd-9027eeb7d335",
+                            SecurityStamp = "b0650f7d-d68f-44f0-879c-1b321d3afef3",
                             TwoFactorEnabled = false,
                             UserName = "Administrator"
                         });
