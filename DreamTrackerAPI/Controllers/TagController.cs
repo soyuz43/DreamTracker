@@ -24,7 +24,7 @@ public class TagController : ControllerBase
     {
         List<TagDTO> dtos = await _context.Tags
             .AsNoTracking()
-            .OrderBy(t => t.Name)
+            .OrderBy(t => t.Id)
             .Select(t => new TagDTO
             {
                 Id = t.Id,
