@@ -1,7 +1,9 @@
+// src/components/ApplicationViews.jsx
 import { Route, Routes } from "react-router-dom";
 import { AuthorizedRoute } from "./auth/AuthorizedRoute";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
+import AllDreams from "./Dream/AllDreams"
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
   return (
@@ -11,7 +13,7 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
           index
           element={
             <AuthorizedRoute loggedInUser={loggedInUser}>
-              <p>Welcome to DreamTracker</p>
+              <AllDreams />
             </AuthorizedRoute>
           }
         />
