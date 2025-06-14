@@ -9,7 +9,7 @@ export default function AllDreams() {
   const [dreams, setDreams] = useState([])
   const [tags, setTags] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState("")
+  const [tagFilter, setTagFilter] = useState("")
 
   useEffect(() => {
     fetchAllDreams().then(setDreams).catch(console.error)
@@ -20,18 +20,20 @@ export default function AllDreams() {
     setSearchTerm(e.target.value.toLowerCase())
   }
 
-  const handleCategoryChange = (e) => {
-    setCategoryFilter(e.target.value)
+  const handleTagChange = (e) => {
+    setTagFilter(e.target.value)
   }
 
   const filteredDreams = dreams.filter((d) => {
     const matchesSearch =
       d.title.toLowerCase().includes(searchTerm) ||
       d.content.toLowerCase().includes(searchTerm)
-    const matchesCategory = categoryFilter
-      ? d.category.id === parseInt(categoryFilter)
+
+    const matchesTag = tagFilter
+      ? d.tags.some(tag => tag.id === parseInt(tagFilter))
       : true
-    return matchesSearch && matchesCategory
+
+    return matchesSearch && matchesTag
   })
 
   return (
@@ -48,11 +50,11 @@ export default function AllDreams() {
             onChange={handleSearchChange}
           />
           <select
-            value={categoryFilter}
-            onChange={handleCategoryChange}
+            value={tagFilter}
+            onChange={handleTagChange}
             className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="">All Categories</option>
+            <option value="">All Tags</option>
             {tags.map((tag) => (
               <option key={tag.id} value={tag.id}>
                 {tag.name}
