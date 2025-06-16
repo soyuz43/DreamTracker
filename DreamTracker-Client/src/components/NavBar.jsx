@@ -28,6 +28,7 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
                     : "text-gray-300 hover:text-white hover:bg-gray-800/60"
                 }`
               }
+              style={({ isActive }) => isActive ? { backgroundColor: '#7c3aed' } : {}}
             >
               All Dreams
             </NavLink>
@@ -40,6 +41,7 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
                     : "text-gray-300 hover:text-white hover:bg-gray-800/60"
                 }`
               }
+              style={({ isActive }) => isActive ? { backgroundColor: '#7c3aed' } : {}}
             >
               My Dreams
             </NavLink>
@@ -52,6 +54,7 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
                     : "text-gray-300 hover:text-white hover:bg-gray-800/60"
                 }`
               }
+              style={({ isActive }) => isActive ? { backgroundColor: '#7c3aed' } : {}}
             >
               Favorites
             </NavLink>
@@ -64,6 +67,7 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
                     : "bg-gradient-to-r from-purple-600/20 to-pink-600/20 text-purple-300 hover:from-purple-600/30 hover:to-pink-600/30 hover:text-white border border-purple-500/30"
                 }`
               }
+              style={({ isActive }) => isActive ? { backgroundColor: '#7c3aed' } : {}}
             >
               + New Dream
             </NavLink>
@@ -76,6 +80,7 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
                     : "text-gray-300 hover:text-white hover:bg-gray-800/60"
                 }`
               }
+              style={({ isActive }) => isActive ? { backgroundColor: '#7c3aed' } : {}}
             >
               Profile
             </NavLink>
