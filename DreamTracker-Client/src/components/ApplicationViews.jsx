@@ -3,8 +3,8 @@ import { Route, Routes } from "react-router-dom"
 import { AuthorizedRoute } from "./auth/AuthorizedRoute"
 import Login from "./auth/Login"
 import Register from "./auth/Register"
-import AllDreams from "./Dream/AllDreams"
-import DreamDetails from "./Dream/DreamDetails"
+import AllDreams from "./dream/AllDreams"
+import DreamDetails from "./dream/DreamDetails"
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
   return (
