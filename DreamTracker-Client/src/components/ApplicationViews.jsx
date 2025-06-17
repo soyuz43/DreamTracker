@@ -1,10 +1,11 @@
 // src/components/ApplicationViews.jsx
-import { Route, Routes } from "react-router-dom"
-import { AuthorizedRoute } from "./auth/AuthorizedRoute"
-import Login from "./auth/Login"
-import Register from "./auth/Register"
-import AllDreams from "./dream/AllDreams"
-import DreamDetails from "./dream/DreamDetails"
+import { Route, Routes } from "react-router-dom";
+import { AuthorizedRoute } from "./auth/AuthorizedRoute";
+import Login from "./auth/Login";
+import Register from "./auth/Register";
+import AllDreams from "./dream/AllDreams";
+import DreamDetails from "./dream/DreamDetails";
+import CreateDream from "./dream/CreateDream";
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
   return (
@@ -27,6 +28,14 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
           }
         />
         <Route
+          path="dreams/new"
+          element={
+            <AuthorizedRoute loggedInUser={loggedInUser}>
+              <CreateDream />
+            </AuthorizedRoute>
+          }
+        />
+        <Route
           path="login"
           element={<Login setLoggedInUser={setLoggedInUser} />}
         />
@@ -37,5 +46,5 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
       </Route>
       <Route path="*" element={<p>Whoops, nothing here...</p>} />
     </Routes>
-  )
+  );
 }

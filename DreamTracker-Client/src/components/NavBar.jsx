@@ -110,14 +110,11 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
             <NavLink
               to="/login"
               className={({ isActive }) =>
-                `px-6 py-2.5 rounded-lg text-white font-semibold transform transition-all duration-200 ${
+                `px-6 py-2.5 rounded-lg font-semibold transform transition-all duration-200 ${
                   isActive
-                    ? "bg-purple-600 shadow-lg shadow-purple-600/10"
-                    : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg shadow-purple-600/10 hover:shadow-purple-600/20 hover:scale-105"
+                    ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
+                    : "bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-lg shadow-purple-600/10 hover:shadow-purple-600/20 hover:scale-105"
                 }`
-              }
-              style={({ isActive }) =>
-                isActive ? { backgroundColor: "#7c3aed" } : {}
               }
             >
               Login

@@ -25,3 +25,37 @@ export async function fetchDreamById(id) {
   }
   return res.json();
 }
+
+/**
+ * Create a new dream.
+ * Requires an authenticated user context.
+ */
+export async function createDream(dream) {
+  const res = await fetch(baseUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(dream)
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to create dream");
+  }
+
+  return res.json();
+}
+
+/**
+ * Delete a dream by ID.
+ * Requires appropriate authorization.
+ */
+export async function deleteDream(id) {
+  const res = await fetch(`${baseUrl}/${id}`, {
+    method: "DELETE"
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to delete dream with id ${id}`);
+  }
+}
