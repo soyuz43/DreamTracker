@@ -38,6 +38,7 @@ public class DreamController : ControllerBase
             Content = d.Content!,
             IsPublic = d.IsPublic,
             CreatedOn = d.CreatedOn,
+            UserProfileId = d.UserProfileId, 
             PublishedBy = (d.ShowAuthor && d.UserProfile is not null)
                 ? $"{d.UserProfile.LastName}, {d.UserProfile.FirstName}"
                 : "Anonymous",
@@ -79,6 +80,7 @@ public class DreamController : ControllerBase
             Content = d.Content!,
             IsPublic = d.IsPublic,
             CreatedOn = d.CreatedOn,
+            UserProfileId = d.UserProfileId, 
             PublishedBy = d.ShowAuthor && d.UserProfile != null
                 ? $"{d.UserProfile.LastName}, {d.UserProfile.FirstName}"
                 : "Anonymous",

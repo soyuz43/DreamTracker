@@ -13,6 +13,7 @@ namespace DreamTrackerAPI.Models.DTOs
 
         // Optional attribution; defaults to "Anonymous" unless ShowAuthor is true
         public string PublishedBy { get; set; } = null!;
+        public int UserProfileId { get; set; }
 
         // Nested DTOs for related entities
         public CategoryDTO Category { get; set; } = null!;
