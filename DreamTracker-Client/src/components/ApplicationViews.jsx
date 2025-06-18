@@ -6,6 +6,7 @@ import Register from "./auth/Register";
 import AllDreams from "./dream/AllDreams";
 import DreamDetails from "./dream/DreamDetails";
 import CreateDream from "./dream/CreateDream";
+import MyDreams from "./dream/MyDreams"
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
   return (
@@ -32,6 +33,14 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
           element={
             <AuthorizedRoute loggedInUser={loggedInUser}>
               <CreateDream />
+            </AuthorizedRoute>
+          }
+        />
+        <Route
+          path="my-dreams"
+          element={
+            <AuthorizedRoute loggedInUser={loggedInUser}>
+              <MyDreams loggedInUser={loggedInUser} />
             </AuthorizedRoute>
           }
         />
