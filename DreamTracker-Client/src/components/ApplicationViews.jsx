@@ -16,7 +16,7 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
           index
           element={
             <AuthorizedRoute loggedInUser={loggedInUser}>
-              <AllDreams />
+              <AllDreams loggedInUser={loggedInUser}/>
             </AuthorizedRoute>
           }
         />

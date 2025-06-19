@@ -59,3 +59,23 @@ export async function deleteDream(id) {
     throw new Error(`Failed to delete dream with id ${id}`);
   }
 }
+
+/**
+ * Update an existing dream by ID.
+ * Accepts a dream ID and a partial or full update payload (DreamDTO format).
+ * Returns nothing on success (204 No Content).
+ * Throws on error.
+ */
+export async function updateDream(id, updatedDream) {
+  const res = await fetch(`${baseUrl}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(updatedDream)
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to update dream with id ${id}`);
+  }
+}
