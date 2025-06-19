@@ -269,7 +269,7 @@ namespace DreamTrackerAPI.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", 0, "0f93cd2f-55ba-45f2-9201-f8703d7cd4ae", "admina@strator.comx", true, false, null, "ADMINA@STRATOR.COMX", "ADMINISTRATOR", "AQAAAAIAAYagAAAAELJ4F5gwq33GU0DwcH5XKx5pDp+lfixNl2bdOPXR5FLqFyG3BFxvJnBcE0csaQyttw==", null, false, "6f2b5cb0-be5e-4cfe-9350-eb2ba6c2a61c", false, "Administrator" });
+                values: new object[] { "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", 0, "4a98ce9d-44a8-4c11-8f75-0b4f83ea5781", "admina@strator.comx", true, false, null, "ADMINA@STRATOR.COMX", "ADMINISTRATOR", "AQAAAAIAAYagAAAAEPCRVTAWz0MES4UWdXYj2YJCyiaYcqPSUCKcMPu05UNxrwM0My9/SIIBoVC4e81GXg==", null, false, "4a938a75-9de6-4348-bec3-332ab12235a7", false, "Administrator" });
 
             migrationBuilder.InsertData(
                 table: "Categories",

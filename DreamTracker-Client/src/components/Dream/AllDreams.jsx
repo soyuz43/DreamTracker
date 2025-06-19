@@ -5,8 +5,9 @@ import { fetchAllDreams } from "../../managers/dreamManager";
 import { fetchAllTags } from "../../managers/tagManager";
 import { fetchAllCategories } from "../../managers/categoryManager";
 import DreamList from "./DreamList";
+import EditDreamModal from "./EditDreamModal";
 
-export default function AllDreams() {
+export default function AllDreams({ loggedInUser }) {
   const [dreams, setDreams] = useState([]);
   const [tags, setTags] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -14,6 +15,7 @@ export default function AllDreams() {
   const [searchTerm, setSearchTerm] = useState("");
   const [tagFilter, setTagFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [editingDream, setEditingDream] = useState(null);
 
   useEffect(() => {
     fetchAllDreams().then(setDreams).catch(console.error);
@@ -24,6 +26,22 @@ export default function AllDreams() {
   const handleSearchChange = (e) => setSearchTerm(e.target.value.toLowerCase());
   const handleTagChange = (e) => setTagFilter(e.target.value);
   const handleCategoryChange = (e) => setCategoryFilter(e.target.value);
+
+  // Add edit handler
+  const handleEdit = (dream) => {
+    setEditingDream(dream);
+  };
+
+  const handleCloseEdit = () => {
+    setEditingDream(null);
+  };
+
+  const handleUpdateDream = (dreamId, updatedData) => {
+    setDreams(prev => prev.map(d => 
+      d.id === dreamId ? {...d, ...updatedData} : d
+    ));
+    setEditingDream(null);
+  };
 
   const filteredDreams = dreams.filter((d) => {
     const matchesSearch =
@@ -110,7 +128,19 @@ export default function AllDreams() {
           </fieldset>
         </div>
       </header>
-      <DreamList dreams={filteredDreams} />
+      <DreamList
+        dreams={filteredDreams}
+        loggedInUser={loggedInUser}
+        onEdit={handleEdit} // Pass the edit handler
+        mode="all"
+      />
+      
+      <EditDreamModal 
+        dream={editingDream}
+        isOpen={!!editingDream}
+        onClose={handleCloseEdit}
+        onUpdate={handleUpdateDream}
+      />
     </section>
   );
 }

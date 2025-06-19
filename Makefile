@@ -1,9 +1,11 @@
 .PHONY: serve backend frontend reset-db
 
 serve:
-	@echo "Starting backend and frontend..."
-	make -j2 backend frontend
-
+	@echo "Starting backend..."
+	$(MAKE) backend &
+	sleep 8
+	@echo "Starting frontend..."
+	$(MAKE) frontend
 backend:
 	cd DreamTrackerAPI && dotnet watch run --launch-profile https
 
