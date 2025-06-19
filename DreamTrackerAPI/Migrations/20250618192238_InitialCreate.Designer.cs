@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DreamTrackerAPI.Migrations
 {
     [DbContext(typeof(DreamTrackerDbContext))]
-    [Migration("20250614150115_InitialCreate")]
+    [Migration("20250618192238_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -515,15 +515,15 @@ namespace DreamTrackerAPI.Migrations
                         {
                             Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "268e52b7-8f86-4d56-b70b-aad7040bda2a",
+                            ConcurrencyStamp = "0f93cd2f-55ba-45f2-9201-f8703d7cd4ae",
                             Email = "admina@strator.comx",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMINA@STRATOR.COMX",
                             NormalizedUserName = "ADMINISTRATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAELKhYUgjP90JThAxRZYsqcGeaXPSe6ptF5ULb5NTkG88EvQm+uEzDkVCA0njKLu3Lg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELJ4F5gwq33GU0DwcH5XKx5pDp+lfixNl2bdOPXR5FLqFyG3BFxvJnBcE0csaQyttw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b0650f7d-d68f-44f0-879c-1b321d3afef3",
+                            SecurityStamp = "6f2b5cb0-be5e-4cfe-9350-eb2ba6c2a61c",
                             TwoFactorEnabled = false,
                             UserName = "Administrator"
                         });

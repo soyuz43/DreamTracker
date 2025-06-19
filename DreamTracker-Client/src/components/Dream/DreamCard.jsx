@@ -1,6 +1,6 @@
 // src/components/Dream/DreamCard.jsx
 
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 
 export default function DreamCard({ dream, onDelete, showDelete = false }) {
   return (
@@ -30,9 +30,7 @@ export default function DreamCard({ dream, onDelete, showDelete = false }) {
 
       <div className="text-sm text-gray-500">
         <strong>Tags:</strong>{" "}
-        {dream.tags?.length
-          ? dream.tags.map((t) => t.name).join(", ")
-          : "None"}
+        {dream.tags?.length ? dream.tags.map((t) => t.name).join(", ") : "None"}
       </div>
 
       <div className="flex justify-between items-center mt-4">
@@ -43,12 +41,13 @@ export default function DreamCard({ dream, onDelete, showDelete = false }) {
         {showDelete && (
           <button
             onClick={() => onDelete?.(dream.id)}
-            className="text-sm text-red-600 hover:text-red-800 hover:underline transition"
+            className="px-4 py-2 !bg-red-600 text-white text-sm font-semibold rounded shadow hover:!bg-red-700 transition"
+            style={{ backgroundColor: "#dc2626" }} // red-600
           >
             Delete
           </button>
         )}
       </div>
     </div>
-  )
+  );
 }
