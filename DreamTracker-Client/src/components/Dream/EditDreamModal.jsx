@@ -3,13 +3,15 @@
 import { useEffect, useState } from "react"
 import { updateDream } from "../../managers/dreamManager"
 import { fetchAllCategories } from "../../managers/categoryManager"
+import { fetchAllTags } from "../../managers/tagManager"
 
 export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [categoryId, setCategoryId] = useState("")
-  const [tagsString, setTagsString] = useState("")
   const [categories, setCategories] = useState([])
+  const [tags, setTags] = useState([])
+  const [selectedTags, setSelectedTags] = useState(new Set())
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -19,15 +21,27 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
       setTitle(dream.title || "")
       setContent(dream.content || "")
       setCategoryId(dream.category?.id || "")
-      setTagsString(dream.tags?.map(t => t.name).join(", ") || "")
+      
+      // Set selected tags based on the dream's current tags
+      const dreamTagIds = dream.tags?.map(t => t.id) || []
+      setSelectedTags(new Set(dreamTagIds))
     }
   }, [isOpen, dream])
 
   useEffect(() => {
     if (isOpen) {
       fetchAllCategories().then(setCategories).catch(console.error)
+      fetchAllTags().then(setTags).catch(console.error)
     }
   }, [isOpen])
+
+  const handleTagToggle = (tagId) => {
+    setSelectedTags((prev) => {
+      const updated = new Set(prev)
+      updated.has(tagId) ? updated.delete(tagId) : updated.add(tagId)
+      return updated
+    })
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -38,10 +52,7 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
       title,
       content,
       categoryId: categoryId || null,
-      tags: tagsString
-        .split(",")
-        .map(t => t.trim())
-        .filter(t => t.length > 0)
+      tagIds: Array.from(selectedTags)
     }
 
     try {
@@ -59,7 +70,7 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-xl p-6 relative">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 relative">
         <button
           onClick={onClose}
           className="absolute top-2 right-4 text-gray-400 hover:text-gray-600 text-xl"
@@ -82,7 +93,7 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 block w-full border rounded p-2"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:outline-none"
               required
             />
           </div>
@@ -93,7 +104,7 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={4}
-              className="mt-1 block w-full border rounded p-2"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:outline-none"
               required
             />
           </div>
@@ -103,7 +114,7 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="mt-1 block w-full border rounded p-2"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:outline-none"
             >
               <option value="">— No category —</option>
               {categories.map(cat => (
@@ -115,17 +126,33 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Tags</label>
-            <input
-              type="text"
-              value={tagsString}
-              onChange={(e) => setTagsString(e.target.value)}
-              className="mt-1 block w-full border rounded p-2"
-              placeholder="Comma-separated"
-            />
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+            <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-md p-3 bg-gray-50">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {tags.map((tag) => (
+                  <label key={tag.id} className="inline-flex items-center">
+                    <input
+                      type="checkbox"
+                      value={tag.id}
+                      checked={selectedTags.has(tag.id)}
+                      onChange={() => handleTagToggle(tag.id)}
+                      className="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">{tag.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="mr-3 px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
               disabled={loading}
