@@ -109,7 +109,7 @@ The frontend should now be running on `http://localhost:5173` and the API on `ht
 
 ## 👤 About the Developer
 
-DreamTracker is a capstone project by \[Your Name], built to explore the intersection of introspection, mental health, and digital design. It reflects a deep interest in how technology can serve—not distract—its users.
+DreamTracker is a capstone project by William Stetar, built to explore the intersection of introspection, mental health, and digital design. It reflects a deep interest in how technology can serve—not distract—its users.
 
 ---
 
