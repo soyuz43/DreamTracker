@@ -6,7 +6,8 @@ import Register from "./auth/Register";
 import AllDreams from "./dream/AllDreams";
 import DreamDetails from "./dream/DreamDetails";
 import CreateDream from "./dream/CreateDream";
-import MyDreams from "./dream/MyDreams"
+import MyDreams from "./dream/MyDreams";
+import Profile from "./profile/Profile";
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
   return (
@@ -16,7 +17,7 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
           index
           element={
             <AuthorizedRoute loggedInUser={loggedInUser}>
-              <AllDreams loggedInUser={loggedInUser}/>
+              <AllDreams loggedInUser={loggedInUser} />
             </AuthorizedRoute>
           }
         />
@@ -41,6 +42,14 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
           element={
             <AuthorizedRoute loggedInUser={loggedInUser}>
               <MyDreams loggedInUser={loggedInUser} />
+            </AuthorizedRoute>
+          }
+        />
+        <Route
+          path="profile"
+          element={
+            <AuthorizedRoute loggedInUser={loggedInUser}>
+              <Profile loggedInUser={loggedInUser} />
             </AuthorizedRoute>
           }
         />

@@ -20,15 +20,7 @@ export default function DreamCard({
   // Correct ownership check using userProfileId
   const isOwner = loggedInUser?.id === dream.userProfileId
   
-  // Debug logging
-  console.log('DreamCard Debug:', {
-    dreamId: dream.id,
-    userProfileId: dream.userProfileId,
-    loggedInUserId: loggedInUser?.id,
-    isOwner,
-    mode,
-    hasOnEdit: !!onEdit
-  });
+
 
   return (
     <div className="relative bg-white shadow rounded-lg p-6 space-y-3 border border-gray-100">
