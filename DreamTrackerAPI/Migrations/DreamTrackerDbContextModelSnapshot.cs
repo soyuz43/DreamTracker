@@ -182,12 +182,45 @@ namespace DreamTrackerAPI.Migrations
                         {
                             Id = 6,
                             CategoryId = 8,
-                            Content = "She swam silently through the kitchen tiles. I think I’ve been reading too much Faulkner.",
+                            Content = "She swam silently through the kitchen tiles. I think I've been reading too much Faulkner.",
                             CreatedOn = new DateTime(2024, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsPublic = true,
                             ShowAuthor = false,
                             Title = "My mother was a fish",
                             UserProfileId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryId = 3,
+                            Content = "I realized I was dreaming and took control. I flew over a desert.",
+                            CreatedOn = new DateTime(2024, 10, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsPublic = true,
+                            ShowAuthor = true,
+                            Title = "Woke up inside the dream",
+                            UserProfileId = 2
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryId = 7,
+                            Content = "I saw a clock with no hands ticking louder and louder. Then silence.",
+                            CreatedOn = new DateTime(2024, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsPublic = false,
+                            ShowAuthor = false,
+                            Title = "The clock with no hands",
+                            UserProfileId = 2
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CategoryId = 8,
+                            Content = "Water was everywhere, but only on the ceiling. I swam upward through air.",
+                            CreatedOn = new DateTime(2024, 10, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsPublic = true,
+                            ShowAuthor = false,
+                            Title = "Swimming through the ceiling",
+                            UserProfileId = 2
                         });
                 });
 
@@ -270,6 +303,67 @@ namespace DreamTrackerAPI.Migrations
                         {
                             DreamId = 6,
                             TagId = 7
+                        },
+                        new
+                        {
+                            DreamId = 7,
+                            TagId = 1
+                        },
+                        new
+                        {
+                            DreamId = 7,
+                            TagId = 9
+                        },
+                        new
+                        {
+                            DreamId = 8,
+                            TagId = 4
+                        },
+                        new
+                        {
+                            DreamId = 8,
+                            TagId = 8
+                        },
+                        new
+                        {
+                            DreamId = 9,
+                            TagId = 10
+                        },
+                        new
+                        {
+                            DreamId = 9,
+                            TagId = 11
+                        },
+                        new
+                        {
+                            DreamId = 9,
+                            TagId = 6
+                        });
+                });
+
+            modelBuilder.Entity("DreamTrackerAPI.Models.Favorite", b =>
+                {
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DreamId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("FavoritedOn")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("UserProfileId", "DreamId");
+
+                    b.HasIndex("DreamId");
+
+                    b.ToTable("Favorites");
+
+                    b.HasData(
+                        new
+                        {
+                            UserProfileId = 2,
+                            DreamId = 6,
+                            FavoritedOn = new DateTime(2024, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
@@ -382,6 +476,14 @@ namespace DreamTrackerAPI.Migrations
                             FirstName = "Admina",
                             IdentityUserId = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
                             LastName = "Strator"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "202 Sleep Lane",
+                            FirstName = "Lucy",
+                            IdentityUserId = "b2f0a5a7-55f6-4b6e-a12f-89ef34d9ec3c",
+                            LastName = "Dreamer"
                         });
                 });
 
@@ -512,17 +614,33 @@ namespace DreamTrackerAPI.Migrations
                         {
                             Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4a98ce9d-44a8-4c11-8f75-0b4f83ea5781",
+                            ConcurrencyStamp = "211adcc0-1500-45d7-8405-fcacf917094c",
                             Email = "admina@strator.comx",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMINA@STRATOR.COMX",
                             NormalizedUserName = "ADMINISTRATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPCRVTAWz0MES4UWdXYj2YJCyiaYcqPSUCKcMPu05UNxrwM0My9/SIIBoVC4e81GXg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPHtr3pC9/Li2edAPwVjHkvh3N3PTaPMYObOurOEVcR/mVIB8nglbFN813sbv1wNlQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4a938a75-9de6-4348-bec3-332ab12235a7",
+                            SecurityStamp = "84f4dc76-6fb4-4abd-ae14-aa54f88533a7",
                             TwoFactorEnabled = false,
                             UserName = "Administrator"
+                        },
+                        new
+                        {
+                            Id = "b2f0a5a7-55f6-4b6e-a12f-89ef34d9ec3c",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "5390448e-2e8b-441c-8d25-c4a97f3f0d0a",
+                            Email = "lucy@dream.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "LUCY@DREAM.COM",
+                            NormalizedUserName = "LUCY",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDvLpOMexGoD+ONU/5/DG57BppMPZAIRFC0G30EaHOJDi+ObFotq1ed71imwuNGPcA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "6f4de5ad-2091-46a9-98a7-ab1d9e87cee3",
+                            TwoFactorEnabled = false,
+                            UserName = "lucy"
                         });
                 });
 
@@ -650,6 +768,25 @@ namespace DreamTrackerAPI.Migrations
                     b.Navigation("Dream");
 
                     b.Navigation("Tag");
+                });
+
+            modelBuilder.Entity("DreamTrackerAPI.Models.Favorite", b =>
+                {
+                    b.HasOne("DreamTrackerAPI.Models.Dream", "Dream")
+                        .WithMany()
+                        .HasForeignKey("DreamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DreamTrackerAPI.Models.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dream");
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("DreamTrackerAPI.Models.UserProfile", b =>
