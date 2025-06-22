@@ -1,7 +1,7 @@
 // src/components/dream/MyDreams.jsx
 
 import { useEffect, useState } from "react";
-import { fetchAllDreams, deleteDream } from "../../managers/dreamManager";
+import { fetchAllDreams, fetchDreamById, deleteDream } from "../../managers/dreamManager";
 import DreamList from "./DreamList";
 import EditDreamModal from "./EditDreamModal";
 
@@ -12,25 +12,23 @@ export default function MyDreams({ loggedInUser }) {
   const [editingDream, setEditingDream] = useState(null);
 
   useEffect(() => {
+    setLoading(true);
     fetchAllDreams()
       .then((data) => {
-        console.log("LoggedInUser.id:", loggedInUser.id);
-        console.log("First dream user:", data[0]?.user);
-        console.log("Raw dream object:", data[0]);
         const mine = data.filter((d) => d.userProfileId === loggedInUser.id);
         setDreams(mine);
-        setLoading(false);
       })
       .catch((err) => {
         console.error("Failed to load dreams:", err);
         setError("Could not fetch your dreams.");
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, [loggedInUser]);
 
   const handleDelete = async (dreamId) => {
     if (!window.confirm("Are you sure you want to delete this dream?")) return;
-
     try {
       await deleteDream(dreamId);
       setDreams((prev) => prev.filter((d) => d.id !== dreamId));
@@ -40,7 +38,6 @@ export default function MyDreams({ loggedInUser }) {
     }
   };
 
-  // Add edit handler
   const handleEdit = (dream) => {
     setEditingDream(dream);
   };
@@ -49,11 +46,19 @@ export default function MyDreams({ loggedInUser }) {
     setEditingDream(null);
   };
 
-  const handleUpdateDream = (dreamId, updatedData) => {
-    setDreams(prev => prev.map(d => 
-      d.id === dreamId ? {...d, ...updatedData} : d
-    ));
-    setEditingDream(null);
+  const handleUpdateDream = async (dreamId, updatedData) => {
+    // After saving, re-fetch the single dream to get all nested data
+    try {
+      const fresh = await fetchDreamById(dreamId);
+      setDreams((prev) =>
+        prev.map((d) => (d.id === dreamId ? fresh : d))
+      );
+    } catch (err) {
+      console.error("Failed to reload updated dream:", err);
+      setError("Couldn’t refresh dream after update.");
+    } finally {
+      setEditingDream(null);
+    }
   };
 
   if (loading) {
@@ -79,14 +84,14 @@ export default function MyDreams({ loggedInUser }) {
         <DreamList
           dreams={dreams}
           onDelete={handleDelete}
-          onEdit={handleEdit} // Pass the edit handler
+          onEdit={handleEdit}
           showDelete
-          loggedInUser={loggedInUser} // Use loggedInUser instead of currentUserId
+          loggedInUser={loggedInUser}
           mode="mine"
         />
       )}
-      
-      <EditDreamModal 
+
+      <EditDreamModal
         dream={editingDream}
         isOpen={!!editingDream}
         onClose={handleCloseEdit}
