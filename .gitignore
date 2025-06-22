@@ -1,0 +1,3 @@
+# Ignore test build artifacts
+DreamTrackerAPI.Tests/bin/
+DreamTrackerAPI.Tests/obj/
