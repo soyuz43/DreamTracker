@@ -14,6 +14,8 @@ public class DreamTrackerDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Category> Categories { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<DreamTag> DreamTags { get; set; }
+    public DbSet<Favorite> Favorites { get; set; }
+
 
     public DreamTrackerDbContext(DbContextOptions<DreamTrackerDbContext> context, IConfiguration config)
         : base(context)
@@ -33,17 +35,30 @@ public class DreamTrackerDbContext : IdentityDbContext<IdentityUser>
             NormalizedName = "admin"
         });
 
-        modelBuilder.Entity<IdentityUser>().HasData(new IdentityUser
-        {
-            Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
-            UserName = "Administrator",
-            Email = "admina@strator.comx",
-            NormalizedEmail = "ADMINA@STRATOR.COMX",
-            NormalizedUserName = "ADMINISTRATOR",
-            EmailConfirmed = true,
-            PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(null, _configuration["AdminPassword"]),
-            SecurityStamp = Guid.NewGuid().ToString()
-        });
+        modelBuilder.Entity<IdentityUser>().HasData(
+            new IdentityUser
+            {
+                Id = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
+                UserName = "Administrator",
+                Email = "admina@strator.comx",
+                NormalizedEmail = "ADMINA@STRATOR.COMX",
+                NormalizedUserName = "ADMINISTRATOR",
+                EmailConfirmed = true,
+                PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(new IdentityUser(), _configuration["AdminPassword"] ?? "DefaultAdminPassword"),
+                SecurityStamp = Guid.NewGuid().ToString()
+            },
+            new IdentityUser
+            {
+                Id = "b2f0a5a7-55f6-4b6e-a12f-89ef34d9ec3c",
+                UserName = "lucy",
+                Email = "lucy@dream.com",
+                NormalizedEmail = "LUCY@DREAM.COM",
+                NormalizedUserName = "LUCY",
+                EmailConfirmed = true,
+                PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(new IdentityUser(), _configuration["UserPassword"] ?? "DefaultUserPassword"),
+                SecurityStamp = Guid.NewGuid().ToString()
+            }
+        );
 
         modelBuilder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
         {
@@ -51,14 +66,25 @@ public class DreamTrackerDbContext : IdentityDbContext<IdentityUser>
             UserId = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f"
         });
 
-        modelBuilder.Entity<UserProfile>().HasData(new UserProfile
-        {
-            Id = 1,
-            IdentityUserId = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
-            FirstName = "Admina",
-            LastName = "Strator",
-            Address = "101 Main Street"
-        });
+        modelBuilder.Entity<UserProfile>().HasData(
+            new UserProfile
+            {
+                Id = 1,
+                IdentityUserId = "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f",
+                FirstName = "Admina",
+                LastName = "Strator",
+                Address = "101 Main Street"
+            },
+            new UserProfile
+            {
+                Id = 2,
+                IdentityUserId = "b2f0a5a7-55f6-4b6e-a12f-89ef34d9ec3c",
+                FirstName = "Lucy",
+                LastName = "Dreamer",
+                Address = "202 Sleep Lane"
+            }
+        );
+
 
         // ─── Categories ─────────────────────────────────────────────────────────────
         modelBuilder.Entity<Category>().HasData(new Category[]
@@ -153,12 +179,44 @@ public class DreamTrackerDbContext : IdentityDbContext<IdentityUser>
             UserProfileId = 1,
             CategoryId = 8,
             Title = "My mother was a fish",
-            Content = "She swam silently through the kitchen tiles. I think I’ve been reading too much Faulkner.",
+            Content = "She swam silently through the kitchen tiles. I think I've been reading too much Faulkner.",
             IsPublic = true,
             ShowAuthor = false,
             CreatedOn = new DateTime(2024, 10, 6)
+        },
+        new Dream
+        {
+            Id = 7,
+            UserProfileId = 2,
+            CategoryId = 3, // Lucid Dreams
+            Title = "Woke up inside the dream",
+            Content = "I realized I was dreaming and took control. I flew over a desert.",
+            IsPublic = true,
+            ShowAuthor = true,
+            CreatedOn = new DateTime(2024, 10, 7)
+        },
+        new Dream
+        {
+            Id = 8,
+            UserProfileId = 2,
+            CategoryId = 7,
+            Title = "The clock with no hands",
+            Content = "I saw a clock with no hands ticking louder and louder. Then silence.",
+            IsPublic = false,
+            ShowAuthor = false,
+            CreatedOn = new DateTime(2024, 10, 8)
+        },
+        new Dream
+        {
+            Id = 9,
+            UserProfileId = 2,
+            CategoryId = 8, // Surreal & Symbolic Dreams
+            Title = "Swimming through the ceiling",
+            Content = "Water was everywhere, but only on the ceiling. I swam upward through air.",
+            IsPublic = true,
+            ShowAuthor = false,
+            CreatedOn = new DateTime(2024, 10, 9)
         }
-        
         });
 
         // ─── DreamTags (join table relations) ────────────────────────────────────
@@ -176,7 +234,14 @@ public class DreamTrackerDbContext : IdentityDbContext<IdentityUser>
             new DreamTag { DreamId = 6, TagId = 4 }, // Confusion
             new DreamTag { DreamId = 6, TagId = 10 }, // Surreal
             new DreamTag { DreamId = 6, TagId = 11 }, // Absurdity
-            new DreamTag { DreamId = 6, TagId = 7 } // Sadness (subtle grief under the joke)
+            new DreamTag { DreamId = 6, TagId = 7 }, // Sadness
+            new DreamTag { DreamId = 7, TagId = 1 }, // Joy
+            new DreamTag { DreamId = 7, TagId = 9 }, // Wonder
+            new DreamTag { DreamId = 8, TagId = 4 }, // Confusion
+            new DreamTag { DreamId = 8, TagId = 8 }, // Anxiety
+            new DreamTag { DreamId = 9, TagId = 10 }, // Surreal
+            new DreamTag { DreamId = 9, TagId = 11 }, // Absurdity
+            new DreamTag { DreamId = 9, TagId = 6 }  // Love
         });
 
         modelBuilder.Entity<DreamTag>().HasKey(dt => new { dt.DreamId, dt.TagId });
@@ -189,5 +254,26 @@ public class DreamTrackerDbContext : IdentityDbContext<IdentityUser>
             .HasOne(dt => dt.Tag)
             .WithMany(t => t.DreamTags)
             .HasForeignKey(dt => dt.TagId);
+
+        modelBuilder.Entity<Favorite>().HasKey(f => new { f.UserProfileId, f.DreamId });
+
+        modelBuilder.Entity<Favorite>()
+            .HasOne(f => f.UserProfile)
+            .WithMany()
+            .HasForeignKey(f => f.UserProfileId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Favorite>()
+            .HasOne(f => f.Dream)
+            .WithMany()
+            .HasForeignKey(f => f.DreamId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Favorite>().HasData(new Favorite
+        {
+            UserProfileId = 2,
+            DreamId = 6,
+            FavoritedOn = new DateTime(2024, 10, 10)
+        });
     }
 }

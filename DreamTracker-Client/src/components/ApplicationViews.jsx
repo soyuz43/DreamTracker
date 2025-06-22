@@ -8,6 +8,7 @@ import DreamDetails from "./dream/DreamDetails";
 import CreateDream from "./dream/CreateDream";
 import MyDreams from "./dream/MyDreams";
 import Profile from "./profile/Profile";
+import Favorites from "./favorites/Favorites";
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
   return (
@@ -45,6 +46,15 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
             </AuthorizedRoute>
           }
         />
+        <Route
+          path="favorites"
+          element={
+            <AuthorizedRoute loggedInUser={loggedInUser}>
+              <Favorites loggedInUser={loggedInUser} />
+            </AuthorizedRoute>
+          }
+        />
+
         <Route
           path="profile"
           element={

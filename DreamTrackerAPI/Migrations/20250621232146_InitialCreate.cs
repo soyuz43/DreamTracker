@@ -261,6 +261,31 @@ namespace DreamTrackerAPI.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Favorites",
+                columns: table => new
+                {
+                    UserProfileId = table.Column<int>(type: "integer", nullable: false),
+                    DreamId = table.Column<int>(type: "integer", nullable: false),
+                    FavoritedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Favorites", x => new { x.UserProfileId, x.DreamId });
+                    table.ForeignKey(
+                        name: "FK_Favorites_Dreams_DreamId",
+                        column: x => x.DreamId,
+                        principalTable: "Dreams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Favorites_UserProfiles_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -269,7 +294,11 @@ namespace DreamTrackerAPI.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", 0, "4a98ce9d-44a8-4c11-8f75-0b4f83ea5781", "admina@strator.comx", true, false, null, "ADMINA@STRATOR.COMX", "ADMINISTRATOR", "AQAAAAIAAYagAAAAEPCRVTAWz0MES4UWdXYj2YJCyiaYcqPSUCKcMPu05UNxrwM0My9/SIIBoVC4e81GXg==", null, false, "4a938a75-9de6-4348-bec3-332ab12235a7", false, "Administrator" });
+                values: new object[,]
+                {
+                    { "b2f0a5a7-55f6-4b6e-a12f-89ef34d9ec3c", 0, "5390448e-2e8b-441c-8d25-c4a97f3f0d0a", "lucy@dream.com", true, false, null, "LUCY@DREAM.COM", "LUCY", "AQAAAAIAAYagAAAAEDvLpOMexGoD+ONU/5/DG57BppMPZAIRFC0G30EaHOJDi+ObFotq1ed71imwuNGPcA==", null, false, "6f4de5ad-2091-46a9-98a7-ab1d9e87cee3", false, "lucy" },
+                    { "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", 0, "211adcc0-1500-45d7-8405-fcacf917094c", "admina@strator.comx", true, false, null, "ADMINA@STRATOR.COMX", "ADMINISTRATOR", "AQAAAAIAAYagAAAAEPHtr3pC9/Li2edAPwVjHkvh3N3PTaPMYObOurOEVcR/mVIB8nglbFN813sbv1wNlQ==", null, false, "84f4dc76-6fb4-4abd-ae14-aa54f88533a7", false, "Administrator" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Categories",
@@ -312,7 +341,11 @@ namespace DreamTrackerAPI.Migrations
             migrationBuilder.InsertData(
                 table: "UserProfiles",
                 columns: new[] { "Id", "Address", "FirstName", "IdentityUserId", "LastName" },
-                values: new object[] { 1, "101 Main Street", "Admina", "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", "Strator" });
+                values: new object[,]
+                {
+                    { 1, "101 Main Street", "Admina", "dbc40bc6-0829-4ac5-a3ed-180f5e916a5f", "Strator" },
+                    { 2, "202 Sleep Lane", "Lucy", "b2f0a5a7-55f6-4b6e-a12f-89ef34d9ec3c", "Dreamer" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Dreams",
@@ -324,7 +357,10 @@ namespace DreamTrackerAPI.Migrations
                     { 3, 4, "Taking the same exam over and over.", new DateTime(2024, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, "Back in high school again", 1 },
                     { 4, 5, "Flying without effort, seeing the skyline shift below.", new DateTime(2024, 10, 4, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Soaring over cities", 1 },
                     { 5, 6, "The more I run, the slower I move. I wake up breathless.", new DateTime(2024, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, "Being chased but never caught", 1 },
-                    { 6, 8, "She swam silently through the kitchen tiles. I think I’ve been reading too much Faulkner.", new DateTime(2024, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), true, false, "My mother was a fish", 1 }
+                    { 6, 8, "She swam silently through the kitchen tiles. I think I've been reading too much Faulkner.", new DateTime(2024, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), true, false, "My mother was a fish", 1 },
+                    { 7, 3, "I realized I was dreaming and took control. I flew over a desert.", new DateTime(2024, 10, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), true, true, "Woke up inside the dream", 2 },
+                    { 8, 7, "I saw a clock with no hands ticking louder and louder. Then silence.", new DateTime(2024, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), false, false, "The clock with no hands", 2 },
+                    { 9, 8, "Water was everywhere, but only on the ceiling. I swam upward through air.", new DateTime(2024, 10, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), true, false, "Swimming through the ceiling", 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -344,8 +380,20 @@ namespace DreamTrackerAPI.Migrations
                     { 6, 4 },
                     { 6, 7 },
                     { 6, 10 },
-                    { 6, 11 }
+                    { 6, 11 },
+                    { 7, 1 },
+                    { 7, 9 },
+                    { 8, 4 },
+                    { 8, 8 },
+                    { 9, 6 },
+                    { 9, 10 },
+                    { 9, 11 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Favorites",
+                columns: new[] { "DreamId", "UserProfileId", "FavoritedOn" },
+                values: new object[] { 6, 2, new DateTime(2024, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -400,6 +448,11 @@ namespace DreamTrackerAPI.Migrations
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Favorites_DreamId",
+                table: "Favorites",
+                column: "DreamId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserProfiles_IdentityUserId",
                 table: "UserProfiles",
                 column: "IdentityUserId");
@@ -427,13 +480,16 @@ namespace DreamTrackerAPI.Migrations
                 name: "DreamTags");
 
             migrationBuilder.DropTable(
+                name: "Favorites");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Dreams");
+                name: "Tags");
 
             migrationBuilder.DropTable(
-                name: "Tags");
+                name: "Dreams");
 
             migrationBuilder.DropTable(
                 name: "Categories");
