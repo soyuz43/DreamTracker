@@ -5,5 +5,5 @@ public class FavoriteDto
 {
     public int DreamId { get; set; }
     public DateTime FavoritedOn { get; set; }
-    public DreamDTO Dream { get; set; } = null!;
+    public DreamDTO? Dream { get; set; } 
 }

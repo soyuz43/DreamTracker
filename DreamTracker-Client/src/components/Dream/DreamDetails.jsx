@@ -47,7 +47,7 @@ export default function DreamDetails() {
         {dream.tags.length > 0 && (
           <div className="mt-6">
             <h4 className="text-md font-medium text-gray-800 mb-2">Tags:</h4>
-            <ul className="list-disc list-inside text-sm text-gray-600">
+            <ul className="list-disc list-inside text-sm text-gray-600 space-y-1 pl-5">
               {dream.tags.map((tag) => (
                 <li key={tag.id}>{tag.name}</li>
               ))}
