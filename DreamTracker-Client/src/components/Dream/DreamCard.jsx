@@ -1,13 +1,26 @@
-// src/components/Dream/DreamCard.jsx
+// src/components/dream/DreamCard.jsx
 
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
+import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
+import {
+  fetchFavoriteStatus,
+  addFavorite,
+  removeFavorite,
+} from "../../managers/favoritesManager";
 
 // Simple pencil icon component if @heroicons is not available
 const PencilIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+    />
   </svg>
-)
+);
 
 export default function DreamCard({
   dream,
@@ -15,16 +28,34 @@ export default function DreamCard({
   onEdit,
   loggedInUser,
   showDelete = false,
-  mode = "all" // "mine" or "all"
+  mode = "all", // "mine" or "all"
 }) {
-  // Correct ownership check using userProfileId
-  const isOwner = loggedInUser?.id === dream.userProfileId
-  
+  const isOwner = loggedInUser?.id === dream.userProfileId;
+  const [isFavorited, setIsFavorited] = useState(false);
 
+  useEffect(() => {
+    if (mode === "all" && !isOwner) {
+      fetchFavoriteStatus(dream.id)
+        .then((dto) => setIsFavorited(dto.isFavorited))
+        .catch(console.error);
+    }
+  }, [dream.id, isOwner, mode]);
+
+  const toggleFavorite = async () => {
+    try {
+      if (isFavorited) {
+        await removeFavorite(dream.id);
+      } else {
+        await addFavorite(dream.id);
+      }
+      setIsFavorited(!isFavorited);
+    } catch (err) {
+      console.error("Failed to toggle favorite", err);
+    }
+  };
 
   return (
     <div className="relative bg-white shadow rounded-lg p-6 space-y-3 border border-gray-100">
-
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-indigo-700">
           <Link to={`/dreams/${dream.id}`} className="hover:underline">
@@ -38,9 +69,7 @@ export default function DreamCard({
         </span>
       </div>
 
-      <p className="text-gray-700 text-sm whitespace-pre-wrap">
-        {dream.content}
-      </p>
+      <p className="text-gray-700 text-sm whitespace-pre-wrap">{dream.content}</p>
 
       {dream.category?.name && (
         <div className="text-sm text-gray-500">
@@ -57,7 +86,6 @@ export default function DreamCard({
         <div className="text-xs italic text-gray-400">
           — {dream.publishedBy || "Anonymous"}
         </div>
-
         <div className="flex gap-2">
           {showDelete && isOwner && (
             <button
@@ -67,7 +95,6 @@ export default function DreamCard({
               Delete
             </button>
           )}
-
           {mode === "mine" && isOwner && onEdit && (
             <button
               onClick={() => onEdit(dream)}
@@ -79,6 +106,20 @@ export default function DreamCard({
         </div>
       </div>
 
+      {mode === "all" && !isOwner && (
+        <button
+          onClick={toggleFavorite}
+          className="absolute bottom-4 right-4 p-2 rounded-full hover:bg-red-100 transition"
+          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          {isFavorited ? (
+            <HeartSolid className="h-5 w-5 text-red-600" />
+          ) : (
+            <HeartOutline className="h-5 w-5 text-gray-400" />
+          )}
+        </button>
+      )}
+
       {mode === "all" && isOwner && onEdit && (
         <button
           onClick={() => onEdit(dream)}
@@ -89,5 +130,5 @@ export default function DreamCard({
         </button>
       )}
     </div>
-  )
+  );
 }
