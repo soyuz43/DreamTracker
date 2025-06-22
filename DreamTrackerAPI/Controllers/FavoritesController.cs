@@ -8,9 +8,11 @@ using System.Security.Claims;
 
 namespace DreamTrackerAPI.Controllers;
 
+#if !DEBUG
+[Authorize]
+#endif
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize]
 public class FavoriteController : ControllerBase
 {
     private readonly DreamTrackerDbContext _context;
@@ -21,34 +23,48 @@ public class FavoriteController : ControllerBase
     }
 
     // GET: api/Favorite
-    // [Authorize]
-    [HttpGet]
+    [HttpGet("mine")]
     public async Task<ActionResult<List<FavoriteDto>>> GetMyFavorites()
     {
         int userProfileId = await GetUserProfileId();
-        
-        // Debug: Log what we're looking for
-        Console.WriteLine($"Looking for favorites for UserProfileId: {userProfileId}");
-        
-        // Debug: Check all favorites in database
-        var allFavorites = await _context.Favorites.ToListAsync();
-        Console.WriteLine($"Total favorites in database: {allFavorites.Count}");
-        foreach (var fav in allFavorites)
-        {
-            Console.WriteLine($"Favorite: UserProfileId={fav.UserProfileId}, DreamId={fav.DreamId}");
-        }
-        
+
         var favorites = await _context.Favorites
             .AsNoTracking()
             .Where(f => f.UserProfileId == userProfileId)
+            .Include(f => f.Dream)
+                .ThenInclude(d => d.Category)
+            .Include(f => f.Dream)
+                .ThenInclude(d => d.UserProfile)
+            .Include(f => f.Dream)
+                .ThenInclude(d => d.DreamTags)
+                    .ThenInclude(dt => dt.Tag)
             .Select(f => new FavoriteDto
             {
                 DreamId = f.DreamId,
-                FavoritedOn = f.FavoritedOn
+                FavoritedOn = f.FavoritedOn,
+                Dream = new DreamDTO
+                {
+                    Id = f.Dream.Id,
+                    Title = f.Dream.Title,
+                    Content = f.Dream.Content,
+                    IsPublic = f.Dream.IsPublic,
+                    CreatedOn = f.Dream.CreatedOn,
+                    PublishedBy = f.Dream.UserProfile != null ? f.Dream.UserProfile.FirstName : "Anonymous",
+                    UserProfileId = f.Dream.UserProfileId,
+                    Category = new CategoryDTO
+                    {
+                        Id = f.Dream.Category.Id,
+                        Name = f.Dream.Category.Name
+                    },
+                    Tags = f.Dream.DreamTags.Select(dt => new TagDTO
+                    {
+                        Id = dt.Tag.Id,
+                        Name = dt.Tag.Name
+                    }).ToList()
+                }
             })
             .ToListAsync();
 
-        Console.WriteLine($"Filtered favorites count: {favorites.Count}");
         return Ok(favorites);
     }
 
@@ -57,6 +73,7 @@ public class FavoriteController : ControllerBase
     public async Task<ActionResult<FavoriteStatusDto>> GetStatus(int dreamId)
     {
         int userProfileId = await GetUserProfileId();
+
         bool isFavorited = await _context.Favorites
             .AnyAsync(f => f.UserProfileId == userProfileId && f.DreamId == dreamId);
 
@@ -100,6 +117,7 @@ public class FavoriteController : ControllerBase
     public async Task<ActionResult<FavoriteDto>> Delete(int dreamId)
     {
         int userProfileId = await GetUserProfileId();
+
         var favorite = await _context.Favorites
             .SingleOrDefaultAsync(f => f.UserProfileId == userProfileId && f.DreamId == dreamId);
 
@@ -118,17 +136,16 @@ public class FavoriteController : ControllerBase
     private async Task<int> GetUserProfileId()
     {
         var identityUserId = GetIdentityUserId();
-        
+
         Console.WriteLine($"Identity User ID from claims: {identityUserId}");
-        
-        // Debug: Check all user profiles
+
         var allProfiles = await _context.UserProfiles.ToListAsync();
         Console.WriteLine($"Total user profiles: {allProfiles.Count}");
         foreach (var profile in allProfiles)
         {
             Console.WriteLine($"UserProfile: Id={profile.Id}, IdentityUserId={profile.IdentityUserId}, Name={profile.FirstName}");
         }
-        
+
         var userProfile = await _context.UserProfiles
             .AsNoTracking()
             .FirstOrDefaultAsync(up => up.IdentityUserId == identityUserId);
@@ -146,9 +163,21 @@ public class FavoriteController : ControllerBase
     private string GetIdentityUserId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        Console.WriteLine("Available claims:");
+        foreach (var c in User.Claims)
+        {
+            Console.WriteLine($" - {c.Type} : {c.Value}");
+        }
+
         if (claim == null)
         {
+#if DEBUG
+            Console.WriteLine("WARNING: No JWT found in request. Using mock IdentityUserId for development.");
+            return "mock-user-id-lucy"; // Replace with real IdentityUserId string from DB for testing
+#else
             throw new UnauthorizedAccessException("User is not authenticated.");
+#endif
         }
 
         return claim.Value;
