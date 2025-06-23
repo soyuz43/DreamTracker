@@ -1,4 +1,4 @@
-// src/components/profile/index.jsx
+// src/components/profile/Profile.jsx
 
 import { useState, useEffect } from "react";
 import { fetchAllDreams } from "../../managers/dreamManager";
@@ -37,33 +37,35 @@ export default function Profile({ loggedInUser }) {
     : "Anonymous";
 
   return (
-    <section className="max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold mb-6 text-center">My Profile</h1>
+    <section className="max-w-3xl mx-auto px-4 py-10 bg-white dark:bg-gray-900 transition-colors duration-300">
+      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">
+        My Profile
+      </h1>
 
       <div className="flex gap-4 justify-start mb-6">
         <button
           onClick={handleEdit}
-          className="px-5 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition"
+          className="px-5 py-2 border border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 rounded hover:bg-blue-50 dark:hover:bg-blue-900 transition"
         >
           Edit Name
         </button>
         <button
           onClick={handleDelete}
-          className="px-5 py-2 border border-red-600 text-red-600 rounded hover:bg-red-50 transition"
+          className="px-5 py-2 border border-red-600 text-red-600 dark:border-red-400 dark:text-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900 transition"
         >
           Delete Profile
         </button>
       </div>
 
-      <div className="border rounded-lg p-6 shadow-sm">
-        <label className="block text-sm font-medium text-gray-600 mb-1">
+      <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-sm bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
+        <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
           Full Name
         </label>
-        <p className="text-2xl font-semibold text-gray-900 mb-4">
+        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {fullName}
         </p>
 
-        <p className="text-md text-gray-800">
+        <p className="text-md text-gray-800 dark:text-gray-200">
           <strong>Number of Dreams Written:</strong>{" "}
           <span className="ml-2 font-mono">{dreamCount}</span>
         </p>

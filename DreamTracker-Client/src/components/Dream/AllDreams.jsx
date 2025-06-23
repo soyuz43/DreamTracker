@@ -1,13 +1,8 @@
 // src/components/Dream/AllDreams.jsx
 
-import { useEffect, useState, Fragment } from "react";
-import {
-  Listbox,
-  ListboxButton,
-  ListboxLabel,
-  ListboxOptions,
-  ListboxOption,
-} from "@headlessui/react";
+import { useState, Fragment } from "react";
+import { Listbox, ListboxButton, ListboxLabel, ListboxOptions, ListboxOption } from "@headlessui/react";
+import { useQuery } from "@tanstack/react-query";
 import { fetchAllDreams } from "../../managers/dreamManager";
 import { fetchAllTags } from "../../managers/tagManager";
 import { fetchAllCategories } from "../../managers/categoryManager";
@@ -15,48 +10,76 @@ import DreamList from "./DreamList";
 import EditDreamModal from "./EditDreamModal";
 
 export default function AllDreams({ loggedInUser }) {
-  const [dreams, setDreams] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [categories, setCategories] = useState([]);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [tagFilter, setTagFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [editingDream, setEditingDream] = useState(null);
 
-  useEffect(() => {
-    fetchAllDreams().then(setDreams).catch(console.error);
-    fetchAllTags().then(setTags).catch(console.error);
-    fetchAllCategories().then(setCategories).catch(console.error);
-  }, []);
+  const {
+    data: dreams = [],
+    isLoading: dreamsLoading,
+    error: dreamsError,
+  } = useQuery({
+    queryKey: ["dreams"],
+    queryFn: fetchAllDreams,
+    staleTime: 300_000,
+  });
+
+  const {
+    data: tags = [],
+    isLoading: tagsLoading,
+    error: tagsError,
+  } = useQuery({
+    queryKey: ["tags"],
+    queryFn: fetchAllTags,
+  });
+
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+    error: categoriesError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchAllCategories,
+  });
+
 
   const handleSearchChange = (e) => setSearchTerm(e.target.value.toLowerCase());
   const handleTagChange = (e) => setTagFilter(e.target.value);
-
-  // we'll receive the raw value from Listbox as number | "" so coerce to string
   const handleCategoryChange = (value) =>
     setCategoryFilter(value === "" ? "" : String(value));
 
-  // Edit handlers
   const handleEdit = (dream) => setEditingDream(dream);
   const handleCloseEdit = () => setEditingDream(null);
   const handleUpdateDream = (dreamId, updatedData) => {
-    setDreams((prev) =>
-      prev.map((d) => (d.id === dreamId ? { ...d, ...updatedData } : d))
-    );
+    // invalidation could be better, but local update for now
     setEditingDream(null);
   };
+
+  if (dreamsLoading || tagsLoading || categoriesLoading) {
+    return <p className="text-center mt-12 text-gray-600 dark:text-gray-300">Loading...</p>;
+  }
+  if (dreamsError || tagsError || categoriesError) {
+    return (
+      <p className="text-center mt-12 text-red-600">
+        Error loading data.
+      </p>
+    );
+  }
 
   const filteredDreams = dreams.filter((d) => {
     const matchesSearch =
       d.title.toLowerCase().includes(searchTerm) ||
       d.content.toLowerCase().includes(searchTerm);
+
     const matchesTag = tagFilter
       ? d.tags?.some((t) => t.id === parseInt(tagFilter))
       : true;
+
     const matchesCategory = categoryFilter
       ? d.category?.id === parseInt(categoryFilter)
       : true;
+
     return matchesSearch && matchesTag && matchesCategory;
   });
 
@@ -136,7 +159,7 @@ export default function AllDreams({ loggedInUser }) {
               Filter by Tag
             </legend>
             <div className="flex flex-wrap items-center -mt-2">
-              <label className="flex items-center mr-6 mt-2 px-3 py-1 rounded-md text-sm text-gray-700 dark:text-gray-200 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition-colors">
+              <label className="flex items-center mr-6 mt-2 px-3 py-1 rounded-md text-sm text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition-colors">
                 <input
                   type="radio"
                   name="tag"
@@ -150,7 +173,7 @@ export default function AllDreams({ loggedInUser }) {
               {tags.map((tag) => (
                 <label
                   key={tag.id}
-                  className="flex items-center mr-6 mt-2 px-3 py-1 rounded-md text-sm text-gray-700 dark:text-gray-200 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition-colors"
+                  className="flex items-center mr-6 mt-2 px-3 py-1 rounded-md text-sm text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition-colors"
                 >
                   <input
                     type="radio"

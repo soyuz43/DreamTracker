@@ -1,26 +1,38 @@
 // src/components/favorites/Favorites.jsx
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { fetchMyFavorites } from "../../managers/favoritesManager";
 
 export default function Favorites({ loggedInUser }) {
-  const [favorites, setFavorites] = useState([]);
+  const {
+    data: favorites = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["favorites", loggedInUser?.id],
+    queryFn: fetchMyFavorites,
+    enabled: !!loggedInUser?.id,
+    staleTime: 300_000,
+  });
 
-  useEffect(() => {
-    const loadFavorites = async () => {
-      try {
-        const favs = await fetchMyFavorites();
-        setFavorites(favs);
-      } catch (err) {
-        console.error("Error fetching favorites", err);
-      }
-    };
+  if (isLoading) {
+    return (
+      <p className="text-center mt-12 text-gray-600 dark:text-gray-400">
+        Loading favorites…
+      </p>
+    );
+  }
 
-    if (loggedInUser?.id) {
-      loadFavorites();
-    }
-  }, [loggedInUser]);
+  if (error) {
+    console.error("Error fetching favorites", error);
+    return (
+      <p className="text-center mt-12 text-red-600 dark:text-red-400">
+        Failed to load favorites.
+      </p>
+    );
+  }
 
   return (
     <section className="max-w-3xl mx-auto px-4 py-10">
