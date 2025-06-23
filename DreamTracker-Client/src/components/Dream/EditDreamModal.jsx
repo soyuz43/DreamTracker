@@ -21,8 +21,6 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
       setTitle(dream.title || "")
       setContent(dream.content || "")
       setCategoryId(dream.category?.id || "")
-      
-      // Set selected tags based on the dream's current tags
       const dreamTagIds = dream.tags?.map(t => t.id) || []
       setSelectedTags(new Set(dreamTagIds))
     }
@@ -36,7 +34,7 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
   }, [isOpen])
 
   const handleTagToggle = (tagId) => {
-    setSelectedTags((prev) => {
+    setSelectedTags(prev => {
       const updated = new Set(prev)
       updated.has(tagId) ? updated.delete(tagId) : updated.add(tagId)
       return updated
@@ -70,51 +68,59 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 relative">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 relative transition-colors">
         <button
           onClick={onClose}
-          className="absolute top-2 right-4 text-gray-400 hover:text-gray-600 text-xl"
+          className="absolute top-2 right-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-xl transition-colors"
         >
           ×
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-indigo-700">Edit Dream</h2>
+        <h2 className="text-2xl font-bold mb-4 text-indigo-700 dark:text-indigo-300">
+          Edit Dream
+        </h2>
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-2 rounded mb-3">
+          <div className="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 p-2 rounded mb-3 transition-colors">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Title</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Title
+            </label>
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:outline-none"
+              onChange={e => setTitle(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 focus:outline-none transition-colors"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Content</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Content
+            </label>
             <textarea
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={e => setContent(e.target.value)}
               rows={4}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:outline-none"
+              className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 focus:outline-none transition-colors"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Category</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Category
+            </label>
             <select
               value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:outline-none"
+              onChange={e => setCategoryId(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 focus:outline-none transition-colors"
             >
               <option value="">— No category —</option>
               {categories.map(cat => (
@@ -126,19 +132,23 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
-            <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-md p-3 bg-gray-50">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Tags
+            </label>
+            <div className="max-h-32 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-md p-3 bg-gray-50 dark:bg-gray-700 transition-colors">
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {tags.map((tag) => (
+                {tags.map(tag => (
                   <label key={tag.id} className="inline-flex items-center">
                     <input
                       type="checkbox"
                       value={tag.id}
                       checked={selectedTags.has(tag.id)}
                       onChange={() => handleTagToggle(tag.id)}
-                      className="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300"
+                      className="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 dark:border-gray-600 transition-colors"
                     />
-                    <span className="ml-2 text-sm text-gray-700">{tag.name}</span>
+                    <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                      {tag.name}
+                    </span>
                   </label>
                 ))}
               </div>
@@ -149,14 +159,14 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
             <button
               type="button"
               onClick={onClose}
-              className="mr-3 px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition"
+              className="mr-3 px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition disabled:opacity-60"
+              className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-60 transition-colors"
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>

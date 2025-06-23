@@ -1,7 +1,6 @@
 // DreamTracker-Client\src\App.jsx
 import { useEffect, useState } from "react";
 import "./App.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { tryGetLoggedInUser } from "./managers/authManager";
 import { Spinner } from "reactstrap";
 import NavBar from "./components/NavBar";
@@ -24,11 +23,13 @@ function App() {
 
   return (
     <>
-      <NavBar loggedInUser={loggedInUser} setLoggedInUser={setLoggedInUser} />
-      <ApplicationViews
-        loggedInUser={loggedInUser}
-        setLoggedInUser={setLoggedInUser}
-      />
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+        <NavBar loggedInUser={loggedInUser} setLoggedInUser={setLoggedInUser} />
+        <ApplicationViews
+          loggedInUser={loggedInUser}
+          setLoggedInUser={setLoggedInUser}
+        />
+      </div>
     </>
   );
 }
