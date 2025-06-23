@@ -32,11 +32,11 @@ public class FavoriteController : ControllerBase
             .AsNoTracking()
             .Where(f => f.UserProfileId == userProfileId)
             .Include(f => f.Dream)
-                .ThenInclude(d => d.Category)
+                .ThenInclude(d => d!.Category!)
             .Include(f => f.Dream)
-                .ThenInclude(d => d.UserProfile)
+                .ThenInclude(d => d!.UserProfile)
             .Include(f => f.Dream)
-                .ThenInclude(d => d.DreamTags)
+                .ThenInclude(d => d!.DreamTags!)
                     .ThenInclude(dt => dt.Tag)
             .Select(f => new FavoriteDto
             {

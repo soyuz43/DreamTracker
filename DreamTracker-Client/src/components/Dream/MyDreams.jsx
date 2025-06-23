@@ -1,7 +1,11 @@
 // src/components/dream/MyDreams.jsx
 
 import { useEffect, useState } from "react";
-import { fetchAllDreams, fetchDreamById, deleteDream } from "../../managers/dreamManager";
+import {
+  fetchAllDreams,
+  fetchDreamById,
+  deleteDream,
+} from "../../managers/dreamManager";
 import DreamList from "./DreamList";
 import EditDreamModal from "./EditDreamModal";
 
@@ -50,9 +54,7 @@ export default function MyDreams({ loggedInUser }) {
     // After saving, re-fetch the single dream to get all nested data
     try {
       const fresh = await fetchDreamById(dreamId);
-      setDreams((prev) =>
-        prev.map((d) => (d.id === dreamId ? fresh : d))
-      );
+      setDreams((prev) => prev.map((d) => (d.id === dreamId ? fresh : d)));
     } catch (err) {
       console.error("Failed to reload updated dream:", err);
       setError("Couldn’t refresh dream after update.");
@@ -75,7 +77,9 @@ export default function MyDreams({ loggedInUser }) {
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6">My Dreams</h2>
+      <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">
+        My Dreams
+      </h2>
       {dreams.length === 0 ? (
         <p className="text-gray-500 italic">
           You haven't recorded any dreams yet.

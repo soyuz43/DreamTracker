@@ -55,42 +55,46 @@ export default function DreamCard({
   };
 
   return (
-    <div className="relative bg-white shadow rounded-lg p-6 space-y-3 border border-gray-100">
+    <div className="relative bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-900/20 rounded-lg p-6 space-y-3 border border-gray-100 dark:border-gray-700 transition-colors">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-indigo-700">
+        <h3 className="text-xl font-semibold text-indigo-700 dark:text-indigo-400">
           <Link to={`/dreams/${dream.id}`} className="hover:underline">
             {dream.title}
           </Link>
         </h3>
-        <span className="text-sm text-gray-400">
+        <span className="text-sm text-gray-400 dark:text-gray-500">
           {dream.createdOn
             ? new Date(dream.createdOn).toLocaleDateString()
             : "Unknown date"}
         </span>
       </div>
 
-      <p className="text-gray-700 text-sm whitespace-pre-wrap">{dream.content}</p>
+      <p className="text-gray-700 dark:text-gray-300 text-sm whitespace-pre-wrap">
+        {dream.content}
+      </p>
 
       {dream.category?.name && (
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500 dark:text-gray-400">
           <strong>Category:</strong> {dream.category.name}
         </div>
       )}
 
-      <div className="text-sm text-gray-500">
+      <div className="text-sm text-gray-500 dark:text-gray-400">
         <strong>Tags:</strong>{" "}
-        {dream.tags?.length ? dream.tags.map((t) => t.name).join(", ") : "None"}
+        {dream.tags?.length
+          ? dream.tags.map((t) => t.name).join(", ")
+          : "None"}
       </div>
 
       <div className="flex justify-between items-center mt-4">
-        <div className="text-xs italic text-gray-400">
+        <div className="text-xs italic text-gray-400 dark:text-gray-500">
           — {dream.publishedBy || "Anonymous"}
         </div>
         <div className="flex gap-2">
           {showDelete && isOwner && (
             <button
               onClick={() => onDelete?.(dream.id)}
-              className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded shadow hover:bg-red-700 transition"
+              className="px-4 py-2 bg-red-600 dark:bg-red-700 text-white text-sm font-semibold rounded shadow hover:bg-red-700 dark:hover:bg-red-800 transition"
             >
               Delete
             </button>
@@ -98,7 +102,7 @@ export default function DreamCard({
           {mode === "mine" && isOwner && onEdit && (
             <button
               onClick={() => onEdit(dream)}
-              className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded shadow hover:bg-indigo-700 transition"
+              className="px-4 py-2 bg-indigo-600 dark:bg-indigo-700 text-white text-sm font-semibold rounded shadow hover:bg-indigo-700 dark:hover:bg-indigo-800 transition"
             >
               Edit
             </button>
@@ -109,13 +113,13 @@ export default function DreamCard({
       {mode === "all" && !isOwner && (
         <button
           onClick={toggleFavorite}
-          className="absolute bottom-4 right-4 p-2 rounded-full hover:bg-red-100 transition"
+          className="absolute bottom-4 right-4 p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
           title={isFavorited ? "Remove from favorites" : "Add to favorites"}
         >
           {isFavorited ? (
-            <HeartSolid className="h-5 w-5 text-red-600" />
+            <HeartSolid className="h-5 w-5 text-red-600 dark:text-red-500" />
           ) : (
-            <HeartOutline className="h-5 w-5 text-gray-400" />
+            <HeartOutline className="h-5 w-5 text-gray-400 dark:text-gray-500" />
           )}
         </button>
       )}
@@ -123,10 +127,10 @@ export default function DreamCard({
       {mode === "all" && isOwner && onEdit && (
         <button
           onClick={() => onEdit(dream)}
-          className="absolute bottom-4 right-4 p-2 rounded-full bg-indigo-100 hover:bg-indigo-200 transition-colors"
+          className="absolute bottom-4 right-4 p-2 rounded-full bg-indigo-100 dark:bg-indigo-900 hover:bg-indigo-200 dark:hover:bg-indigo-700 transition-colors"
           title="Edit your dream"
         >
-          <PencilIcon className="h-4 w-4 text-indigo-600" />
+          <PencilIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />
         </button>
       )}
     </div>

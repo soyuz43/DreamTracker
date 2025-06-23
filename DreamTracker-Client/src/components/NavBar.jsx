@@ -1,26 +1,59 @@
 // src/components/NavBar.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { logout } from "../managers/authManager";
+import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 
 export default function NavBar({ loggedInUser, setLoggedInUser }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDark, setIsDark] = useState(() =>
+    document.documentElement.classList.contains("dark")
+  );
+
+  useEffect(() => {
+    // Ensure initial theme matches html class
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDark]);
 
   const handleLogout = () => {
     logout().then(() => setLoggedInUser(null));
     setIsMenuOpen(false);
   };
 
+  const toggleDarkMode = () => {
+    setIsDark((prev) => !prev);
+  };
+
   return (
-    <nav className="bg-gray-900/50 backdrop-blur-lg border-b border-gray-800/20 px-6 py-4 shadow-lg sticky top-0 z-50">
+    <nav className="bg-gray-700/50 dark:bg-gray-900/50 backdrop-blur-lg border-b border-gray-800/20 px-6 py-4 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
-          <NavLink to="/" className="hover:scale-105 transform transition-all duration-300 ease-out block">
+          <NavLink
+            to="/"
+            className="hover:scale-105 transform transition-all duration-300 ease-out block"
+          >
             DreamTracker
           </NavLink>
         </div>
+
+        {/* Dark Mode Toggle */}
+        <button
+          onClick={toggleDarkMode}
+          className="ml-4 p-2 rounded-full text-gray-300 hover:text-white focus:outline-none"
+          title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {isDark ? (
+            <SunIcon className="h-6 w-6" />
+          ) : (
+            <MoonIcon className="h-6 w-6" />
+          )}
+        </button>
 
         {/* Hamburger Menu Toggle - Mobile only */}
         <button
@@ -31,7 +64,11 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
         </button>
 
         {/* Nav Links */}
-        <div className={`flex-col md:flex md:flex-row md:items-center md:space-x-2 ${isMenuOpen ? "flex mt-4 space-y-2" : "hidden"} md:mt-0`}>
+        <div
+          className={`flex-col md:flex md:flex-row md:items-center md:space-x-2 ${
+            isMenuOpen ? "flex mt-4 space-y-2" : "hidden"
+          } md:mt-0`}
+        >
           {loggedInUser ? (
             <>
               {["/", "/my-dreams", "/favorites"].map((path, idx) => {
