@@ -52,39 +52,50 @@ export default function CreateDream() {
   }
 
   return (
-    <section className="max-w-4xl mx-auto my-10 bg-white shadow-lg rounded-lg p-8 space-y-6 border border-gray-200">
-      <h2 className="text-2xl font-semibold text-indigo-700">New Dream</h2>
+    <section className="max-w-4xl mx-auto my-10 bg-white dark:bg-gray-900 shadow-lg dark:shadow-gray-900/20 rounded-lg p-8 space-y-6 border border-gray-200 dark:border-gray-700 transition-colors">
+      <h2 className="text-2xl font-semibold text-indigo-700 dark:text-indigo-300">
+        New Dream
+      </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Title */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Title</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Title
+          </label>
           <input
             type="text"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:outline-none"
+            className="mt-1 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
           />
         </div>
 
+        {/* Content */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Content</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Content
+          </label>
           <textarea
             rows="5"
             required
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:outline-none"
+            className="mt-1 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
           />
         </div>
 
+        {/* Category */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Category</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Category
+          </label>
           <select
             required
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:outline-none"
+            className="mt-1 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
           >
             <option value="">Select a category...</option>
             {categories.map((c) => (
@@ -95,8 +106,11 @@ export default function CreateDream() {
           </select>
         </div>
 
+        {/* Tags */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Tags</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Tags
+          </label>
           <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
             {tags.map((tag) => (
               <label key={tag.id} className="inline-flex items-center">
@@ -105,45 +119,58 @@ export default function CreateDream() {
                   value={tag.id}
                   checked={selectedTags.has(tag.id)}
                   onChange={() => handleTagToggle(tag.id)}
-                  className="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300"
+                  className="form-checkbox h-4 w-4 text-indigo-600 dark:text-indigo-400 rounded border-gray-300 dark:border-gray-600 transition-colors"
                 />
-                <span className="ml-2 text-gray-700">{tag.name}</span>
+                <span className="ml-2 text-gray-700 dark:text-gray-300">
+                  {tag.name}
+                </span>
               </label>
             ))}
           </div>
         </div>
 
+        {/* Options */}
         <div className="flex items-center gap-6">
           <label className="inline-flex items-center">
             <input
               type="checkbox"
               checked={isPublic}
               onChange={(e) => setIsPublic(e.target.checked)}
-              className="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300"
+              className="form-checkbox h-4 w-4 text-indigo-600 dark:text-indigo-400 rounded border-gray-300 dark:border-gray-600 transition-colors"
             />
-            <span className="ml-2 text-gray-700">Public</span>
+            <span className="ml-2 text-gray-700 dark:text-gray-300">
+              Public
+            </span>
           </label>
           <label className="inline-flex items-center">
             <input
               type="checkbox"
               checked={showAuthor}
               onChange={(e) => setShowAuthor(e.target.checked)}
-              className="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300"
+              className="form-checkbox h-4 w-4 text-indigo-600 dark:text-indigo-400 rounded border-gray-300 dark:border-gray-600 transition-colors"
             />
-            <span className="ml-2 text-gray-700">Show Author</span>
+            <span className="ml-2 text-gray-700 dark:text-gray-300">
+              Show Author
+            </span>
           </label>
         </div>
 
+        {/* Submit */}
         <div className="text-right">
           <button
             type="submit"
-            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow hover:shadow-lg transition"
+            className="px-6 py-2 bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white font-semibold rounded-lg shadow hover:shadow-lg transition-colors"
           >
             Create Dream
           </button>
         </div>
 
-        {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+        {/* Error */}
+        {error && (
+          <p className="text-red-600 dark:text-red-500 text-sm mt-2">
+            {error}
+          </p>
+        )}
       </form>
     </section>
   )
