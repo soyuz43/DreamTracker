@@ -29,19 +29,18 @@ export default function NavBar({ loggedInUser, setLoggedInUser }) {
     setIsDark((prev) => !prev);
   };
 
-  return (
-    <nav className="bg-gray-700/50 dark:bg-gray-900/50 backdrop-blur-lg border-b border-gray-800/20 px-6 py-4 shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo */}
-        <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
-          <NavLink
-            to="/"
-            className="hover:scale-105 transform transition-all duration-300 ease-out block"
-          >
-            DreamTracker
-          </NavLink>
-        </div>
-
+return (
+  <nav className="bg-gray-700/50 dark:bg-gray-900/50 backdrop-blur-lg border-b border-gray-800/20 px-6 py-4 shadow-lg sticky top-0 z-50">
+    <div className="max-w-7xl mx-auto flex items-center justify-between">
+      {/* Logo */}
+      <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 dark:from-purple-400 dark:via-pink-400 dark:to-indigo-400 bg-clip-text text-transparent">
+        <NavLink
+          to="/"
+          className="hover:scale-105 transform transition-all duration-300 ease-out block"
+        >
+          DreamTracker
+        </NavLink>
+      </div>
         {/* Dark Mode Toggle */}
         <button
           onClick={toggleDarkMode}

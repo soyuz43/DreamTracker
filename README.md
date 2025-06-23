@@ -23,7 +23,8 @@ Most dream journaling apps focus solely on private reflection. DreamTracker goes
 - **React** (Vite)  
 - **Tailwind CSS**  
 - **React Router DOM**  
-- **State managed with Hooks and basic prop drilling**
+- **TanStack Query** (formerly React Query) for data fetching, caching & synchronization — see [GitHub](https://github.com/TanStack/query)  
+- **React Query DevTools** for debugging (enabled in development only)  
 
 ### Backend
 - **ASP.NET Core Web API**  
@@ -38,6 +39,7 @@ Most dream journaling apps focus solely on private reflection. DreamTracker goes
 - **VS Code** + Tailwind IntelliSense  
 
 ---
+
 
 ## 🚀 Features
 
