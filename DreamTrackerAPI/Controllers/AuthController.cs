@@ -24,56 +24,70 @@ public class AuthController : ControllerBase
         _userManager = userManager;
     }
 
-    [HttpPost("login")]
-    public IActionResult Login([FromHeader(Name = "Authorization")] string authHeader)
+[HttpPost("login")]
+public async Task<IActionResult> Login([FromHeader(Name = "Authorization")] string authHeader)
+{
+    if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Basic "))
+        return Unauthorized("Missing or invalid Authorization header.");
+
+    try
     {
-        try
+        // Decode base64 string
+        var encodedCreds = authHeader.Substring("Basic ".Length).Trim();
+        var decodedBytes = Convert.FromBase64String(encodedCreds);
+        var decodedString = Encoding.GetEncoding("iso-8859-1").GetString(decodedBytes);
+
+        var separatorIndex = decodedString.IndexOf(':');
+        if (separatorIndex < 0)
+            return Unauthorized("Invalid credentials format.");
+
+        var email = decodedString.Substring(0, separatorIndex);
+        var password = decodedString.Substring(separatorIndex + 1);
+
+        var user = _dbContext.Users.FirstOrDefault(u => u.Email == email);
+        if (user == null)
+            return Unauthorized("User not found.");
+
+        var hasher = new PasswordHasher<IdentityUser>();
+        var result = hasher.VerifyHashedPassword(user, user.PasswordHash, password);
+        if (result != PasswordVerificationResult.Success)
+            return Unauthorized("Incorrect password.");
+
+        // Build claims
+        var claims = new List<Claim>
         {
-            string encodedCreds = authHeader.Substring(6).Trim();
-            string creds = Encoding
-                .GetEncoding("iso-8859-1")
-                .GetString(Convert.FromBase64String(encodedCreds));
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email)
+        };
 
-            int separator = creds.IndexOf(':');
-            string email = creds.Substring(0, separator);
-            string password = creds.Substring(separator + 1);
-
-            var user = _dbContext.Users.FirstOrDefault(u => u.Email == email);
-            var userRoles = _dbContext.UserRoles.Where(ur => ur.UserId == user.Id).ToList();
-            var hasher = new PasswordHasher<IdentityUser>();
-            var result = hasher.VerifyHashedPassword(user, user.PasswordHash, password);
-
-            if (user != null && result == PasswordVerificationResult.Success)
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Email, user.Email)
-                };
-
-                foreach (var userRole in userRoles)
-                {
-                    var role = _dbContext.Roles.FirstOrDefault(r => r.Id == userRole.RoleId);
-                    claims.Add(new Claim(ClaimTypes.Role, role.Name));
-                }
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity)).Wait();
-
-                return Ok();
-            }
-
-            return new UnauthorizedResult();
-        }
-        catch
+        // Get roles
+        var userRoles = _dbContext.UserRoles.Where(ur => ur.UserId == user.Id).ToList();
+        foreach (var userRole in userRoles)
         {
-            return StatusCode(500);
+            var role = _dbContext.Roles.FirstOrDefault(r => r.Id == userRole.RoleId);
+            if (role != null)
+                claims.Add(new Claim(ClaimTypes.Role, role.Name));
         }
+
+        // Create identity and sign in
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+        return Ok(new { message = "Login successful" });
     }
+    catch (FormatException)
+    {
+        return Unauthorized("Base64 decoding failed.");
+    }
+    catch (Exception ex)
+    {
+        // Log error (optional)
+        return StatusCode(500, "Internal server error");
+    }
+}
+
 
     [HttpGet("logout")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]

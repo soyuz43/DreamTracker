@@ -1,70 +1,74 @@
 // src/components/Dream/EditDreamModal.jsx
 
-import { useEffect, useState } from "react"
-import { updateDream } from "../../managers/dreamManager"
-import { fetchAllCategories } from "../../managers/categoryManager"
-import { fetchAllTags } from "../../managers/tagManager"
+import { useEffect, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateDream } from "../../managers/dreamManager";
+import { fetchAllCategories } from "../../managers/categoryManager";
+import { fetchAllTags } from "../../managers/tagManager";
 
 export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
-  const [title, setTitle] = useState("")
-  const [content, setContent] = useState("")
-  const [categoryId, setCategoryId] = useState("")
-  const [categories, setCategories] = useState([])
-  const [tags, setTags] = useState([])
-  const [selectedTags, setSelectedTags] = useState(new Set())
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState(new Set());
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const qc = useQueryClient();
+  const {
+    mutate,
+    isLoading: saving,
+    error: mutationError
+  } = useMutation({
+    mutationFn: ({ id, data }) => updateDream(id, data),
+    onSuccess: (_data, variables) => {
+      // Invalidate the "dreams" query to refetch the updated list
+      qc.invalidateQueries(["dreams"]);
+      // Notify parent with the variables (payload) since the server returns no content
+      onUpdate?.(variables.id, { id: variables.id, ...variables.data });
+      onClose();
+    },
+  });
 
+  // Initialize form fields when modal opens
   useEffect(() => {
     if (isOpen && dream) {
-      setTitle(dream.title || "")
-      setContent(dream.content || "")
-      setCategoryId(dream.category?.id || "")
-      const dreamTagIds = dream.tags?.map(t => t.id) || []
-      setSelectedTags(new Set(dreamTagIds))
+      setTitle(dream.title || "");
+      setContent(dream.content || "");
+      setCategoryId(dream.category?.id || "");
+      const dreamTagIds = dream.tags?.map(t => t.id) || [];
+      setSelectedTags(new Set(dreamTagIds));
     }
-  }, [isOpen, dream])
+  }, [isOpen, dream]);
 
+  // Load categories & tags when modal opens
   useEffect(() => {
     if (isOpen) {
-      fetchAllCategories().then(setCategories).catch(console.error)
-      fetchAllTags().then(setTags).catch(console.error)
+      fetchAllCategories().then(setCategories).catch(console.error);
+      fetchAllTags().then(setTags).catch(console.error);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const handleTagToggle = (tagId) => {
     setSelectedTags(prev => {
-      const updated = new Set(prev)
-      updated.has(tagId) ? updated.delete(tagId) : updated.add(tagId)
-      return updated
-    })
-  }
+      const updated = new Set(prev);
+      updated.has(tagId) ? updated.delete(tagId) : updated.add(tagId);
+      return updated;
+    });
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-
-    const updatedDream = {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const payload = {
       title,
       content,
       categoryId: categoryId || null,
-      tagIds: Array.from(selectedTags)
-    }
+      tagIds: Array.from(selectedTags),
+    };
+    mutate({ id: dream.id, data: payload });
+  };
 
-    try {
-      await updateDream(dream.id, updatedDream)
-      onUpdate?.(dream.id, updatedDream)
-      onClose()
-    } catch (err) {
-      setError(err.message || "Failed to update dream.")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -80,9 +84,9 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
           Edit Dream
         </h2>
 
-        {error && (
+        {mutationError && (
           <div className="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 p-2 rounded mb-3 transition-colors">
-            {error}
+            {mutationError.message}
           </div>
         )}
 
@@ -165,14 +169,14 @@ export default function EditDreamModal({ dream, isOpen, onClose, onUpdate }) {
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={saving}
               className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-60 transition-colors"
             >
-              {loading ? "Saving..." : "Save Changes"}
+              {saving ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>
       </div>
     </div>
-  )
+  );
 }
