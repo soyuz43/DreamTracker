@@ -90,43 +90,53 @@ DreamTracker/
 
 ## How to Run
 
-### 🔧 Prerequisites
+### Prerequisites
 
-* **.NET 8.0 SDK**  
+* **.NET 8.0 SDK**
   Make sure you have the .NET 8 SDK installed. You can check by running:
 
   ```bash
   dotnet --version
   ```
-> If the output doesn’t start with `8.`, download it from [dotnet.microsoft.com](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
-* **Before running the backend for the first time, make sure you have the Entity Framework Core CLI tools installed globally**:
+  > If the output doesn’t start with `8.`, download it from [dotnet.microsoft.com](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
-    ```bash
-    dotnet tool install --global dotnet-ef
-    ```
->📝 You only need to do this once. It enables commands like dotnet ef database update.
+* **Entity Framework Core CLI tools**
+  Before running the backend for the first time, install the EF CLI globally:
 
+  ```bash
+  dotnet tool install --global dotnet-ef
+  ```
+
+  > You only need to do this once. It enables commands like `dotnet ef database update`.
 
 ## 1. Clone the repo
+
 ```bash
 git clone https://github.com/soyuz43/DreamTracker.git
 cd DreamTracker
 ```
 
-### 🔐 Configure Local Secrets (Admin credentials, etc.)
+### (Optional) Configure Local Secrets (Admin credentials, etc.)
 
-Before running the backend, add your required secrets using the .NET Secret Manager. From inside the `DreamTrackerAPI` directory:
+If desired, before running the application, you can add your own passwords by using the .NET Secret Manager. From inside the `DreamTrackerAPI` directory run:
 
 ```bash
 dotnet user-secrets init
-dotnet user-secrets set "AdminUser:Password" "your_secure_password"
-dotnet user-secrets set "DefaultUser:Password" "your_user_password"
+dotnet user-secrets set "AdminUser:Password" "<your_secure_password>"
+dotnet user-secrets set "DefaultUser:Password" "<your_user_password>"
 ```
 
-> 📝 These credentials will be used to seed admin and default user accounts on app startup. 
+> These credentials will be used to seed admin and default user accounts on app startup.
 
-> 🛠️ The dotnet user-secrets tool comes preinstalled with the .NET SDK — no separate install needed.
+> The dotnet user-secrets tool comes with the SDK — no separate install needed.
+
+The following user accounts will be created:
+
+| Role  | Email                                             | Default Password (if not set) |
+| ----- | ------------------------------------------------- | ----------------------------- |
+| Admin | [admina@strator.comx](mailto:admina@strator.comx) | DefaultAdminPassword          |
+| User  | [lucy@dream.com](mailto:lucy@dream.com)           | DefaultUserPassword           |
 
 ## 2. Recommended: Use `make` to run both backend and frontend
 
@@ -138,15 +148,15 @@ make serve
 
 This will:
 
+* Check for frontend dependencies and install them if needed
 * Launch the backend using the `https` launch profile (`dotnet watch run --launch-profile https`)
 * Wait a few seconds to allow the backend to initialize
 * Launch the frontend dev server (`npm run dev`)
 
 The frontend should now be running on `http://localhost:5173` and the API on `https://localhost:5001`.
 
-> 📝 You can also run backend and frontend separately if needed (see below).
+> You can also run backend and frontend separately if needed (see below).
 
----
 
 ## 3. Manual Setup (optional)
 
