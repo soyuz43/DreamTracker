@@ -1,4 +1,4 @@
-// src/components/Dream/CreateDream.jsx
+// src/components/dream/CreateDream.jsx
 
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
@@ -9,6 +9,7 @@ import { fetchAllCategories } from "../../managers/categoryManager"
 export default function CreateDream() {
   const navigate = useNavigate()
 
+  // form state
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [categoryId, setCategoryId] = useState("")
@@ -19,9 +20,46 @@ export default function CreateDream() {
   const [showAuthor, setShowAuthor] = useState(false)
   const [error, setError] = useState(null)
 
+  // Ollama detection state
+  const [ollamaModel, setOllamaModel] = useState(null)
+  const [ollamaReady, setOllamaReady] = useState(false)
+  const [isRewriting, setIsRewriting] = useState(false)
+
+  // fetch tags & categories
   useEffect(() => {
     fetchAllTags().then(setTags).catch(console.error)
     fetchAllCategories().then(setCategories).catch(console.error)
+  }, [])
+
+  // poll Ollama for available models once on mount
+  useEffect(() => {
+    const checkOllama = async () => {
+      try {
+        const res = await fetch("http://localhost:11434/api/tags")
+        if (!res.ok) throw new Error("Ollama not reachable")
+
+        const data = await res.json()
+
+        const usableModels = data.models
+          .filter((m) => !m.details?.embedding_only)
+          .sort(
+            (a, b) =>
+              new Date(b.modified_at).getTime() -
+              new Date(a.modified_at).getTime()
+          )
+
+        if (usableModels.length) {
+          setOllamaModel(usableModels[0].name)
+          setOllamaReady(true)
+        } else {
+          setOllamaReady(false)
+        }
+      } catch {
+        setOllamaReady(false)
+      }
+    }
+
+    checkOllama()
   }, [])
 
   const handleTagToggle = (tagId) => {
@@ -40,7 +78,7 @@ export default function CreateDream() {
       categoryId: parseInt(categoryId),
       tagIds: Array.from(selectedTags),
       isPublic,
-      showAuthor
+      showAuthor,
     }
     try {
       const created = await createDream(dto)
@@ -48,6 +86,40 @@ export default function CreateDream() {
     } catch (err) {
       console.error(err)
       setError("Failed to create dream")
+    }
+  }
+
+  const handleRewriteWithAI = async () => {
+    if (!content.trim() || !ollamaReady) return
+
+    setIsRewriting(true)
+    try {
+      const res = await fetch("http://localhost:11434/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: ollamaModel,
+          prompt: `Rewrite the following into a structured, clear, and coherent narrative. Without adding or expanding upon the content provided. Preserve all important details. Output only the dream—no commentary or formatting:\n\n${content}`,
+          stream: false,
+        }),
+      })
+
+      if (!res.ok) throw new Error("Generate call failed")
+
+      const data = await res.json()
+
+      if (data.response) {
+        setContent(data.response.trim())
+      } else {
+        throw new Error("No response field")
+      }
+    } catch (err) {
+      console.error("Rewrite failed:", err)
+      alert(
+        "Failed to rewrite with AI. Is Ollama installed, models pulled, and running?"
+      )
+    } finally {
+      setIsRewriting(false)
     }
   }
 
@@ -84,6 +156,26 @@ export default function CreateDream() {
             onChange={(e) => setContent(e.target.value)}
             className="mt-1 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
           />
+          {/* Rewrite with AI button + tooltip */}
+          <div className="flex justify-end mt-2 group relative">
+            <button
+              type="button"
+              onClick={handleRewriteWithAI}
+              disabled={!ollamaReady || isRewriting || !content.trim()}
+              className={`px-4 py-1 text-sm rounded transition-colors shadow ${
+                !ollamaReady || isRewriting
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-blue-600 text-white"
+              }`}
+            >
+              {isRewriting ? "Rewriting..." : "Rewrite with AI"}
+            </button>
+            {!ollamaReady && (
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 text-xs text-white bg-black rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                Ollama either not installed, no models pulled, or not running
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Category */}
