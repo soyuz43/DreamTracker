@@ -12,6 +12,7 @@ Most dream journaling apps focus solely on private reflection. DreamTracker goes
 - **Allowing optional anonymous sharing** to foster connection without oversharing
 - **Highlighting patterns** across a user’s dream history
 - **Offering a calm, minimal interface** optimized for night-time or early-morning logging
+- **Includes an AI-powered “Rewrite” tool** that helps structure dreams written as raw notes or fragmented memories
 
 > DreamTracker is built to support introspection and subtle community—without gamification or dopamine traps.
 
@@ -30,13 +31,16 @@ Most dream journaling apps focus solely on private reflection. DreamTracker goes
 - **ASP.NET Core Web API**  
 - **Entity Framework Core**  
 - **SQL Server**  
-- **JWT-based authentication**  
+- **Cookie-based authentication using ASP.NET Identity**
 
 ### Tooling
 - **Git & GitHub**  
 - **Postman** for API testing  
 - **Makefile**-based dev workflow  
 - **VS Code** + Tailwind IntelliSense  
+
+### AI Integration
+- **Ollama** — Local LLM runtime used to structure unformatted dream notes into narrative form via frontend integration
 
 ---
 
@@ -52,6 +56,8 @@ Most dream journaling apps focus solely on private reflection. DreamTracker goes
 - My Dreams vs All Dreams view
 - Edit dreams via modal interface
 - Light/dark dream mode toggle
+- Optional AI rewrite for unstructured dreams using local Ollama LLM
+> ⚠️ Requires [Ollama](https://ollama.com) to be installed and running locally.
 
 ### 🔜 Planned
 - Dream pattern recognition
