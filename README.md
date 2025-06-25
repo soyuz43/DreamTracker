@@ -93,6 +93,12 @@ dotnet tool install --global dotnet-ef
 >📝 You only need to do this once. It enables commands like dotnet ef database update.
 
 
+### 1. Clone the repo
+```bash
+git clone https://github.com/soyuz43/DreamTracker.git
+cd DreamTracker
+```
+
 ### 🔐 Configure Local Secrets (Admin credentials, etc.)
 
 Before running the backend, add your required secrets using the .NET Secret Manager. From inside the `DreamTrackerAPI` directory:
@@ -107,13 +113,6 @@ dotnet user-secrets set "DefaultUser:Password" "your_user_password"
 
 > 📝 These credentials will be used to seed admin and default user accounts on app startup. 
 
-
-
-### 1. Clone the repo
-```bash
-git clone https://github.com/soyuz43/DreamTracker.git
-cd DreamTracker
-```
 
 ### 2. Recommended: Use `make` to run both backend and frontend
 
