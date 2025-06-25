@@ -92,14 +92,23 @@ DreamTracker/
 
 ### 🔧 Prerequisites
 
-Before running the backend for the first time, make sure you have the Entity Framework Core CLI tools installed globally:
-```bash
-dotnet tool install --global dotnet-ef
-```
+* **.NET 8.0 SDK**  
+  Make sure you have the .NET 8 SDK installed. You can check by running:
+
+  ```bash
+  dotnet --version
+  ```
+> If the output doesn’t start with `8.`, download it from [dotnet.microsoft.com](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+
+* **Before running the backend for the first time, make sure you have the Entity Framework Core CLI tools installed globally**:
+
+    ```bash
+    dotnet tool install --global dotnet-ef
+    ```
 >📝 You only need to do this once. It enables commands like dotnet ef database update.
 
 
-### 1. Clone the repo
+## 1. Clone the repo
 ```bash
 git clone https://github.com/soyuz43/DreamTracker.git
 cd DreamTracker
@@ -116,9 +125,9 @@ dotnet user-secrets set "DefaultUser:Password" "your_user_password"
 ```
 
 > 📝 These credentials will be used to seed admin and default user accounts on app startup. 
+> 🛠️ The dotnet user-secrets tool comes preinstalled with the .NET SDK — no separate install needed.
 
-
-### 2. Recommended: Use `make` to run both backend and frontend
+## 2. Recommended: Use `make` to run both backend and frontend
 
 The `Makefile` automates backend and frontend startup with proper sequencing.
 
@@ -138,7 +147,7 @@ The frontend should now be running on `http://localhost:5173` and the API on `ht
 
 ---
 
-### 3. Manual Setup (optional)
+## 3. Manual Setup (optional)
 
 #### Backend
 
@@ -160,7 +169,7 @@ npm run dev
 
 ---
 
-### 4. Optional: Reset Database and Recreate Migrations
+## 4. Optional: Reset Database and Recreate Migrations
 
 ```bash
 make migrations
