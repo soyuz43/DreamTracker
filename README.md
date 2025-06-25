@@ -105,9 +105,7 @@ Before running the backend, add your required secrets using the .NET Secret Mana
 
 ```bash
 dotnet user-secrets init
-dotnet user-secrets set "AdminUser:Email" "admin@example.com"
 dotnet user-secrets set "AdminUser:Password" "your_secure_password"
-dotnet user-secrets set "DefaultUser:Email" "user@example.com"
 dotnet user-secrets set "DefaultUser:Password" "your_user_password"
 ```
 
