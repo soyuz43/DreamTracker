@@ -81,7 +81,33 @@ DreamTracker/
 
 ---
 
+
 ## 🧪 How to Run
+
+### 🔧 Prerequisites
+
+Before running the backend for the first time, make sure you have the Entity Framework Core CLI tools installed globally:
+```bash
+dotnet tool install --global dotnet-ef
+```
+>📝 You only need to do this once. It enables commands like dotnet ef database update.
+
+
+### 🔐 Configure Local Secrets (Admin credentials, etc.)
+
+Before running the backend, add your required secrets using the .NET Secret Manager. From inside the `DreamTrackerAPI` directory:
+
+```bash
+dotnet user-secrets init
+dotnet user-secrets set "AdminUser:Email" "admin@example.com"
+dotnet user-secrets set "AdminUser:Password" "your_secure_password"
+dotnet user-secrets set "DefaultUser:Email" "user@example.com"
+dotnet user-secrets set "DefaultUser:Password" "your_user_password"
+```
+
+> 📝 These credentials will be used to seed admin and default user accounts on app startup. 
+
+
 
 ### 1. Clone the repo
 ```bash
@@ -89,15 +115,39 @@ git clone https://github.com/soyuz43/DreamTracker.git
 cd DreamTracker
 ```
 
-### 2. Set up the backend
+### 2. Recommended: Use `make` to run both backend and frontend
+
+The `Makefile` automates backend and frontend startup with proper sequencing.
+
+```bash
+make serve
+```
+
+This will:
+
+* Launch the backend using the `https` launch profile (`dotnet watch run --launch-profile https`)
+* Wait a few seconds to allow the backend to initialize
+* Launch the frontend dev server (`npm run dev`)
+
+The frontend should now be running on `http://localhost:5173` and the API on `https://localhost:5001`.
+
+> 📝 You can also run backend and frontend separately if needed (see below).
+
+---
+
+### 3. Manual Setup (optional)
+
+#### Backend
 
 ```bash
 cd DreamTrackerAPI
 dotnet ef database update
-dotnet run
+dotnet run --launch-profile https
 ```
 
-### 3. Set up the frontend
+> ⚠️ Note: Using `--launch-profile https` ensures Swagger UI and HTTPS endpoints are available. Without this flag, the app may only serve on `http://localhost:5000`.
+
+#### Frontend
 
 ```bash
 cd DreamTracker-Client
@@ -105,7 +155,28 @@ npm install
 npm run dev
 ```
 
-The frontend should now be running on `http://localhost:5173` and the API on `https://localhost:5001`.
+---
+
+### 4. Optional: Reset Database and Recreate Migrations
+
+```bash
+make migrations
+```
+
+This command will:
+
+* Delete existing EF Core migrations
+* Drop the PostgreSQL `DreamTracker` database (requires `psql` CLI access)
+* Recreate migrations and apply them via `dotnet ef database update`
+
+> ⚠️ **Note:** You must reconfigure your database connection string using the .NET User Secrets system before rerunning migrations:
+
+```bash
+dotnet user-secrets set "ConnectionStrings:DreamTrackerDb" "Host=localhost;Port=5432;Username=postgres;Password=your_password;Database=DreamTracker"
+```
+
+
+
 
 ---
 
