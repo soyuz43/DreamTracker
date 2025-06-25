@@ -57,7 +57,7 @@ Most dream journaling apps focus solely on private reflection. DreamTracker goes
 - Edit dreams via modal interface
 - Light/dark dream mode toggle
 - Optional AI rewrite for unstructured dreams using local Ollama LLM
-> ⚠️ Requires [Ollama](https://ollama.com) to be installed with a non-embedding model pulled and running locally.
+> ⚠️ Requires [Ollama](https://ollama.com) to be installed and running locally with a non-embedding model pulled.
 
 ### 🔜 Planned
 - Dream pattern recognition
