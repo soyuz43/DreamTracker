@@ -125,6 +125,7 @@ dotnet user-secrets set "DefaultUser:Password" "your_user_password"
 ```
 
 > 📝 These credentials will be used to seed admin and default user accounts on app startup. 
+
 > 🛠️ The dotnet user-secrets tool comes preinstalled with the .NET SDK — no separate install needed.
 
 ## 2. Recommended: Use `make` to run both backend and frontend
