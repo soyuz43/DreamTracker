@@ -43,7 +43,7 @@ Most dream journaling apps focus solely on private reflection. DreamTracker goes
 
 ## 🚀 Features
 
-### ✅ MVP
+### MVP
 - User registration & login
 - Create, read, update, delete (CRUD) dreams
 - Tagging system for themes/emotions
@@ -51,12 +51,12 @@ Most dream journaling apps focus solely on private reflection. DreamTracker goes
 - Secure API with protected endpoints
 - My Dreams vs All Dreams view
 - Edit dreams via modal interface
+- Light/dark dream mode toggle
 
 ### 🔜 Planned
 - Dream pattern recognition
-- Commenting on shared dreams (anonymous)
+- Emotional Timeline 
 - Calendar view for dream frequency
-- Light/dark dream mode toggle
 
 ---
 
@@ -82,7 +82,7 @@ DreamTracker/
 ---
 
 
-## 🧪 How to Run
+## How to Run
 
 ### 🔧 Prerequisites
 
