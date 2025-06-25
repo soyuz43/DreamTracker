@@ -1,11 +1,14 @@
 .PHONY: serve backend frontend reset-db
 
 serve:
+	@echo "Checking frontend dependencies..."
+	@[ -d DreamTracker-Client/node_modules ] || (echo "Installing frontend dependencies..." && cd DreamTracker-Client && npm install)
 	@echo "Starting backend..."
 	$(MAKE) backend &
 	sleep 8
 	@echo "Starting frontend..."
 	$(MAKE) frontend
+
 backend:
 	cd DreamTrackerAPI && dotnet watch run --launch-profile https
 
