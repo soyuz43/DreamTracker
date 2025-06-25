@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { useQueryClient } from "@tanstack/react-query"  // ADD THIS
 import { createDream } from "../../managers/dreamManager"
 import { fetchAllTags } from "../../managers/tagManager"
 import { fetchAllCategories } from "../../managers/categoryManager"
 
 export default function CreateDream() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()  // ADD THIS
 
   // form state
   const [title, setTitle] = useState("")
@@ -82,6 +84,11 @@ export default function CreateDream() {
     }
     try {
       const created = await createDream(dto)
+      
+      // INVALIDATE THE CACHE - This will cause all components using 
+      // the "dreams" query to refetch fresh data
+      await queryClient.invalidateQueries({ queryKey: ["dreams"] })
+      
       navigate(`/dreams/${created.id}`)
     } catch (err) {
       console.error(err)

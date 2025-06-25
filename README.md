@@ -110,14 +110,14 @@ DreamTracker/
 
   > You only need to do this once. It enables commands like `dotnet ef database update`.
 
-## 1. Clone the repo
+### 1. Clone the repo
 
 ```bash
 git clone https://github.com/soyuz43/DreamTracker.git
 cd DreamTracker
 ```
 
-### (Optional) Configure Local Secrets (Admin credentials, etc.)
+#### (Optional) Configure Local Secrets (Admin credentials, etc.)
 
 If desired, before running the application, you can add your own passwords by using the .NET Secret Manager. From inside the `DreamTrackerAPI` directory run:
 
@@ -138,7 +138,7 @@ The following user accounts will be created:
 | Admin | [admina@strator.comx](mailto:admina@strator.comx) | DefaultAdminPassword          |
 | User  | [lucy@dream.com](mailto:lucy@dream.com)           | DefaultUserPassword           |
 
-## 2. Recommended: Use `make` to run both backend and frontend
+### 2. Recommended: Use `make` to run both backend and frontend
 
 The `Makefile` automates backend and frontend startup with proper sequencing.
 
@@ -158,7 +158,7 @@ The frontend should now be running on `http://localhost:5173` and the API on `ht
 > You can also run backend and frontend separately if needed (see below).
 
 
-## 3. Manual Setup (optional)
+### 3. Manual Setup (optional)
 
 #### Backend
 
@@ -180,7 +180,7 @@ npm run dev
 
 ---
 
-## 4. Optional: Reset Database and Recreate Migrations
+### 4. Optional: Reset Database and Recreate Migrations
 
 ```bash
 make migrations
