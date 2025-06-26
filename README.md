@@ -99,25 +99,35 @@ This project includes both a .NET backend and a Vite/React frontend. The fastest
 
 Before you begin, ensure the following are installed:
 
-- **.NET 8.0 SDK**  
+* **.NET 8.0 SDK**
   Verify with:
+
   ```bash
   dotnet --version
   ```
 
-The output should start with `8.` — if not, [download it here](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
+  The output should start with `8.` — if not, [download it here](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
 
-* **Dotnet-ef**
-  Make sure `psql` is available in your terminal.
+* **PostgreSQL**
+  Ensure `psql` is available from the command line.
 
-> ℹ️ You do **not** need to install the EF Core CLI (`dotnet-ef`) manually — the `Makefile` will install it automatically if it's missing.
+* **EF Core CLI (`dotnet-ef`)**
+
+  > ℹ️ You do **not** need to install this manually — the `Makefile` will install it automatically if it's missing.
+
+* **User Secrets (Required)**
+  The application expects a PostgreSQL connection string stored in user secrets under the key `DreamTrackerDbConnectionString`.
+  Set it using:
+
+  ```bash
+  dotnet user-secrets set "DreamTrackerDbConnectionString" "Host=localhost;Port=5432;Username=postgres;Password=yourpassword;Database=DreamTracker"
+  ```
 
 * **[Ollama](https://ollama.com/)** (Optional)
   Required for the **"Rewrite with AI"** feature during dream creation. You must have Ollama installed and at least one non-embedding model pulled.
 
 > 🚀 The application automatically uses the most recently pulled usable model.
 
----
 
 ### 1️⃣ Clone the Repo
 
