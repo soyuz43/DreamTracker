@@ -156,15 +156,11 @@ make serve
 
 This command will:
 
-✅ Check for and install frontend dependencies
-
-✅ Ensure `dotnet-ef` is installed globally
-
-✅ Launch the backend with HTTPS (`dotnet watch run`)
-
-✅ Wait a few seconds
-
-✅ Start the frontend dev server
+- ✅ Check for and install frontend dependencies (`npmm install`)
+- ✅ Ensure `dotnet-ef` is installed globally
+- ✅ Launch the backend with HTTPS (`dotnet watch run`)
+- ✅ Wait a few seconds
+- ✅ Start the frontend dev server
 
 Once it’s ready:
 
