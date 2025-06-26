@@ -1,19 +1,27 @@
 // src/components/Dream/AllDreams.jsx
 
 import { useState, Fragment } from "react";
-import { Listbox, ListboxButton, ListboxLabel, ListboxOptions, ListboxOption } from "@headlessui/react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchAllDreams } from "../../managers/dreamManager";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxLabel,
+  ListboxOptions,
+  ListboxOption,
+} from "@headlessui/react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchAllDreams, deleteDream } from "../../managers/dreamManager";
 import { fetchAllTags } from "../../managers/tagManager";
 import { fetchAllCategories } from "../../managers/categoryManager";
 import DreamList from "./DreamList";
 import EditDreamModal from "./EditDreamModal";
 
 export default function AllDreams({ loggedInUser }) {
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [tagFilter, setTagFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [editingDream, setEditingDream] = useState(null);
+  const queryClient = useQueryClient();
 
   const {
     data: dreams = [],
@@ -43,7 +51,6 @@ export default function AllDreams({ loggedInUser }) {
     queryFn: fetchAllCategories,
   });
 
-
   const handleSearchChange = (e) => setSearchTerm(e.target.value.toLowerCase());
   const handleTagChange = (e) => setTagFilter(e.target.value);
   const handleCategoryChange = (value) =>
@@ -56,14 +63,27 @@ export default function AllDreams({ loggedInUser }) {
     setEditingDream(null);
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await deleteDream(id);
+      // refresh list
+      queryClient.invalidateQueries(["dreams"]);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete dream");
+    }
+  };
+
   if (dreamsLoading || tagsLoading || categoriesLoading) {
-    return <p className="text-center mt-12 text-gray-600 dark:text-gray-300">Loading...</p>;
+    return (
+      <p className="text-center mt-12 text-gray-600 dark:text-gray-300">
+        Loading...
+      </p>
+    );
   }
   if (dreamsError || tagsError || categoriesError) {
     return (
-      <p className="text-center mt-12 text-red-600">
-        Error loading data.
-      </p>
+      <p className="text-center mt-12 text-red-600">Error loading data.</p>
     );
   }
 
@@ -197,6 +217,8 @@ export default function AllDreams({ loggedInUser }) {
         dreams={filteredDreams}
         loggedInUser={loggedInUser}
         onEdit={handleEdit}
+        onDelete={handleDelete}
+        showDelete={loggedInUser?.roles?.includes("Admin")}
         mode="all"
       />
 

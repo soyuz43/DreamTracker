@@ -38,7 +38,7 @@ public class DreamController : ControllerBase
             Content = d.Content!,
             IsPublic = d.IsPublic,
             CreatedOn = d.CreatedOn,
-            UserProfileId = d.UserProfileId, 
+            UserProfileId = d.UserProfileId,
             PublishedBy = (d.ShowAuthor && d.UserProfile is not null)
                 ? $"{d.UserProfile.LastName}, {d.UserProfile.FirstName}"
                 : "Anonymous",
@@ -80,7 +80,7 @@ public class DreamController : ControllerBase
             Content = d.Content!,
             IsPublic = d.IsPublic,
             CreatedOn = d.CreatedOn,
-            UserProfileId = d.UserProfileId, 
+            UserProfileId = d.UserProfileId,
             PublishedBy = d.ShowAuthor && d.UserProfile != null
                 ? $"{d.UserProfile.LastName}, {d.UserProfile.FirstName}"
                 : "Anonymous",
@@ -217,14 +217,41 @@ public class DreamController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
+        // 1. Find the dream
         Dream? dream = await _context.Dreams.FindAsync(id);
         if (dream == null)
         {
             return NotFound();
         }
 
+        // 2. Get current user's IdentityUserId (GUID string)
+        string? identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (identityUserId == null)
+        {
+            return Unauthorized("User not recognized.");
+        }
+
+        // 3. Look up their UserProfile
+        UserProfile? profile = await _context.UserProfiles
+            .SingleOrDefaultAsync(up => up.IdentityUserId == identityUserId);
+        if (profile == null)
+        {
+            return Unauthorized("User profile not found.");
+        }
+
+        // 4. Check role and ownership
+        bool isAdmin = User.IsInRole("Admin");
+        bool isOwner = dream.UserProfileId == profile.Id;
+
+        if (!isAdmin && !isOwner)
+        {
+            return Forbid();
+        }
+
+        // 5. Proceed with deletion
         _context.Dreams.Remove(dream);
         await _context.SaveChangesAsync();
+
         return NoContent();
     }
 }

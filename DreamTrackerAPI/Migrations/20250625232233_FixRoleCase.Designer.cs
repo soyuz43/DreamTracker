@@ -3,6 +3,7 @@ using System;
 using DreamTrackerAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DreamTrackerAPI.Migrations
 {
     [DbContext(typeof(DreamTrackerDbContext))]
-    partial class DreamTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250625232233_FixRoleCase")]
+    partial class FixRoleCase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

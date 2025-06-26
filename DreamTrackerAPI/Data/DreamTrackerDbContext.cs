@@ -32,7 +32,7 @@ public class DreamTrackerDbContext : IdentityDbContext<IdentityUser>
         {
             Id = "c3aaeb97-d2ba-4a53-a521-4eea61e59b35",
             Name = "Admin",
-            NormalizedName = "admin"
+            NormalizedName = "ADMIN"
         });
 
         modelBuilder.Entity<IdentityUser>().HasData(
