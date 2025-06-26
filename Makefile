@@ -3,8 +3,6 @@
 serve: check-ef
 	@echo "Checking frontend dependencies..."
 	@[ -d DreamTracker-Client/node_modules ] || (echo "Installing frontend dependencies..." && cd DreamTracker-Client && npm install)
-	@echo "Ensuring database is created with latest migrations..."
-	cd DreamTrackerAPI && dotnet ef database update
 	@echo "Starting backend..."
 	$(MAKE) backend &
 	sleep 8
