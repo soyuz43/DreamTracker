@@ -1,5 +1,4 @@
 // src/components/dream/MyDreams.jsx
-
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
@@ -50,7 +49,6 @@ export default function MyDreams({ loggedInUser }) {
 
   // Handlers
   const handleDelete = (dreamId) => {
-    if (!window.confirm("Are you sure you want to delete this dream?")) return;
     deleteMutation.mutate(dreamId);
   };
 
@@ -69,7 +67,7 @@ export default function MyDreams({ loggedInUser }) {
       );
     } catch (err) {
       console.error("Failed to reload updated dream:", err);
-      setError("Couldn’t refresh dream after update.");
+      setError("Couldn't refresh dream after update.");
     } finally {
       setEditingDream(null);
     }
@@ -115,7 +113,6 @@ export default function MyDreams({ loggedInUser }) {
           mode="mine"
         />
       )}
-
       <EditDreamModal
         dream={editingDream}
         isOpen={!!editingDream}

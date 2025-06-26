@@ -10,7 +10,6 @@ import {
   removeFavorite,
 } from "../../managers/favoritesManager";
 
-// Simple pencil icon component if @heroicons is not available
 const PencilIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
@@ -28,10 +27,18 @@ export default function DreamCard({
   onEdit,
   loggedInUser,
   showDelete = false,
-  mode = "all", // "mine" or "all"
+  mode = "all",
 }) {
   const isOwner = loggedInUser?.id === dream.userProfileId;
   const [isFavorited, setIsFavorited] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  useEffect(() => {
+    if (confirmDelete) {
+      const timer = setTimeout(() => setConfirmDelete(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [confirmDelete]);
 
   useEffect(() => {
     if (mode === "all" && !isOwner) {
@@ -54,8 +61,22 @@ export default function DreamCard({
     }
   };
 
+  const handleDeleteClick = () => {
+    if (confirmDelete) {
+      onDelete?.(dream.id);
+    } else {
+      setConfirmDelete(true);
+    }
+  };
+
+  const deleteBtnClass = confirmDelete
+    ? "px-4 py-2 bg-yellow-500 dark:bg-yellow-600 text-black text-sm font-semibold rounded shadow hover:bg-yellow-600 dark:hover:bg-yellow-700 transition"
+    : "px-4 py-2 bg-red-600 dark:bg-red-700 text-white text-sm font-semibold rounded shadow hover:bg-red-700 dark:hover:bg-red-800 transition";
+
   return (
     <div className="relative bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-900/20 rounded-lg p-6 space-y-3 border border-gray-100 dark:border-gray-700 transition-colors">
+
+      {/* Title & date */}
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-indigo-700 dark:text-indigo-400">
           <Link to={`/dreams/${dream.id}`} className="hover:underline">
@@ -69,36 +90,28 @@ export default function DreamCard({
         </span>
       </div>
 
+      {/* Content */}
       <p className="text-gray-700 dark:text-gray-300 text-sm whitespace-pre-wrap">
         {dream.content}
       </p>
 
+      {/* Category & tags */}
       {dream.category?.name && (
         <div className="text-sm text-gray-500 dark:text-gray-400">
           <strong>Category:</strong> {dream.category.name}
         </div>
       )}
-
       <div className="text-sm text-gray-500 dark:text-gray-400">
         <strong>Tags:</strong>{" "}
-        {dream.tags?.length
-          ? dream.tags.map((t) => t.name).join(", ")
-          : "None"}
+        {dream.tags?.length ? dream.tags.map((t) => t.name).join(", ") : "None"}
       </div>
 
+      {/* Inline action row */}
       <div className="flex justify-between items-center mt-4">
         <div className="text-xs italic text-gray-400 dark:text-gray-500">
           — {dream.publishedBy || "Anonymous"}
         </div>
-        <div className="flex gap-2">
-          {showDelete && isOwner && (
-            <button
-              onClick={() => onDelete?.(dream.id)}
-              className="px-4 py-2 bg-red-600 dark:bg-red-700 text-white text-sm font-semibold rounded shadow hover:bg-red-700 dark:hover:bg-red-800 transition"
-            >
-              Delete
-            </button>
-          )}
+        <div className="flex gap-2 items-center">
           {mode === "mine" && isOwner && onEdit && (
             <button
               onClick={() => onEdit(dream)}
@@ -107,9 +120,45 @@ export default function DreamCard({
               Edit
             </button>
           )}
+
+          {mode === "mine" && showDelete && (
+            <>
+              <button onClick={handleDeleteClick} className={deleteBtnClass}>
+                {confirmDelete ? "Confirm Delete?" : "Delete"}
+              </button>
+              {confirmDelete && (
+                <button
+                  onClick={() => setConfirmDelete(false)}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl leading-none"
+                  aria-label="Cancel delete"
+                >
+                  ×
+                </button>
+              )}
+            </>
+          )}
         </div>
       </div>
 
+      {/* Absolute delete for "all" mode */}
+      {showDelete && mode === "all" && (
+        <div className="absolute bottom-4 right-20 flex items-center gap-2">
+          <button onClick={handleDeleteClick} className={deleteBtnClass}>
+            {confirmDelete ? "Confirm Delete?" : "Delete"}
+          </button>
+          {confirmDelete && (
+            <button
+              onClick={() => setConfirmDelete(false)}
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl leading-none"
+              aria-label="Cancel delete"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Favorite button for non-owners in "all" mode */}
       {mode === "all" && !isOwner && (
         <button
           onClick={toggleFavorite}
@@ -124,6 +173,7 @@ export default function DreamCard({
         </button>
       )}
 
+      {/* Edit icon for owners in "all" mode */}
       {mode === "all" && isOwner && onEdit && (
         <button
           onClick={() => onEdit(dream)}
