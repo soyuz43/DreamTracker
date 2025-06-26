@@ -163,10 +163,6 @@ This command will:
 
 * Check for and install backend dependencies (`dotnet ef`)
 * Ensure `dotnet-ef` is installed globally
-* Check if the PostgreSQL database `DreamTracker` exists
-
-  * If it doesn't, it will create it using the latest migrations
-  * (Note: It will prompt you for your PostgreSQL password)
 * Check for and install frontend dependencies (`npm install`)
 * Launch the backend with HTTPS (`dotnet watch run`)
 * Wait eight seconds
