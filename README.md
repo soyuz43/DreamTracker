@@ -105,7 +105,7 @@ Make sure these are installed before proceeding:
   dotnet --version
   ```
 
-If it doesn’t start with `8.`, download it from:
+If it doesn’t start with `8.`, download it from 
 [Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 * **PostgreSQL**
