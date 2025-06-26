@@ -97,21 +97,26 @@ This project includes both a .NET backend and a Vite/React frontend. The fastest
 
 ### 🔧 Prerequisites
 
-Make sure these are installed before proceeding:
+Before you begin, ensure the following are installed:
 
 - **.NET 8.0 SDK**  
-  Check with:
+  Verify with:
   ```bash
   dotnet --version
   ```
 
-If it doesn’t start with `8.`, download it from 
-[Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+The output should start with `8.` — if not, [download it here](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
 
 * **PostgreSQL**
-  Ensure `psql` is available from the command line.
+  Make sure `psql` is available in your terminal.
+  You do **not** need to create the database manually — the `Makefile` handles it.
 
-> ❗ You do **not** need to manually install the EF Core CLI (`dotnet-ef`) — the Makefile will install it for you automatically if missing.
+> ℹ️ You do **not** need to install the EF Core CLI (`dotnet-ef`) manually — the `Makefile` will install it automatically if it's missing.
+
+* **[Ollama](https://ollama.com/)** (Optional)
+  Required for the **"Rewrite with AI"** feature during dream creation. You must have Ollama installed and at least one non-embedding model pulled.
+
+> 🚀 The application automatically uses the most recently pulled usable model.
 
 ---
 
@@ -156,11 +161,17 @@ make serve
 
 This command will:
 
-- Check for and install frontend dependencies (`npmm install`)
-- Ensure `dotnet-ef` is installed globally
-- Launch the backend with HTTPS (`dotnet watch run`)
-- Wait a eight seconds
-- Start the frontend dev server
+* Check for and install backend dependencies (`dotnet ef`)
+* Ensure `dotnet-ef` is installed globally
+* Check if the PostgreSQL database `DreamTracker` exists
+
+  * If it doesn't, it will create it using the latest migrations
+  * (Note: It will prompt you for your PostgreSQL password)
+* Check for and install frontend dependencies (`npm install`)
+* Launch the backend with HTTPS (`dotnet watch run`)
+* Wait eight seconds
+* Start the frontend dev server
+
 
 Once it’s ready:
 

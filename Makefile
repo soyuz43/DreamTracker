@@ -1,6 +1,6 @@
-.PHONY: serve backend frontend reset-db check-ef migrations
+.PHONY: serve backend frontend reset-db check-ef check-db migrations
 
-serve: check-ef
+serve: check-ef check-db
 	@echo "Checking frontend dependencies..."
 	@[ -d DreamTracker-Client/node_modules ] || (echo "Installing frontend dependencies..." && cd DreamTracker-Client && npm install)
 	@echo "Starting backend..."
@@ -12,6 +12,15 @@ serve: check-ef
 check-ef:
 	@echo "Checking for dotnet-ef CLI tool..."
 	@dotnet tool list -g | grep dotnet-ef > /dev/null || (echo "Installing dotnet-ef CLI globally..." && dotnet tool install --global dotnet-ef)
+
+check-db:
+	@echo "Checking for existing PostgreSQL database 'DreamTracker'..."
+	@if psql -U postgres -lqt | cut -d \| -f 1 | grep -qw DreamTracker; then \
+		echo "Success. Database found."; \
+	else \
+		echo "Database not found. Applying migrations..."; \
+		cd DreamTrackerAPI && dotnet ef database update; \
+	fi
 
 backend:
 	cd DreamTrackerAPI && dotnet watch run --launch-profile https
