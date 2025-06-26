@@ -2,18 +2,19 @@
 
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { useQueryClient } from "@tanstack/react-query"  // ADD THIS
+import { useQueryClient } from "@tanstack/react-query"
 import { createDream } from "../../managers/dreamManager"
 import { fetchAllTags } from "../../managers/tagManager"
 import { fetchAllCategories } from "../../managers/categoryManager"
 
 export default function CreateDream() {
   const navigate = useNavigate()
-  const queryClient = useQueryClient()  // ADD THIS
+  const queryClient = useQueryClient()
 
   // form state
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
+  const [contentBackup, setContentBackup] = useState("") // For undo functionality
   const [categoryId, setCategoryId] = useState("")
   const [categories, setCategories] = useState([])
   const [tags, setTags] = useState([])
@@ -99,6 +100,9 @@ export default function CreateDream() {
   const handleRewriteWithAI = async () => {
     if (!content.trim() || !ollamaReady) return
 
+    // Backup current content before rewriting
+    setContentBackup(content)
+
     setIsRewriting(true)
     try {
       const res = await fetch("http://localhost:11434/api/generate", {
@@ -127,6 +131,13 @@ export default function CreateDream() {
       )
     } finally {
       setIsRewriting(false)
+    }
+  }
+
+  const handleUndoRewrite = () => {
+    if (contentBackup) {
+      setContent(contentBackup)
+      setContentBackup("") // Clear backup after undoing
     }
   }
 
@@ -163,8 +174,8 @@ export default function CreateDream() {
             onChange={(e) => setContent(e.target.value)}
             className="mt-1 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
           />
-          {/* Rewrite with AI button + tooltip */}
-          <div className="flex justify-end mt-2 group relative">
+          {/* Rewrite with AI button + Undo button + tooltip */}
+          <div className="flex justify-end mt-2 gap-2 group relative">
             <button
               type="button"
               onClick={handleRewriteWithAI}
@@ -177,6 +188,18 @@ export default function CreateDream() {
             >
               {isRewriting ? "Rewriting..." : "Rewrite with AI"}
             </button>
+            
+            {/* Undo button - only shows after a rewrite */}
+            {contentBackup && (
+              <button
+                type="button"
+                onClick={handleUndoRewrite}
+                className="px-4 py-1 text-sm rounded bg-yellow-500 hover:bg-yellow-600 text-white shadow transition-colors"
+              >
+                Undo Rewrite
+              </button>
+            )}
+            
             {!ollamaReady && (
               <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 text-xs text-white bg-black rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
                 Ollama either not installed, no models pulled, or not running
