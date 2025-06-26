@@ -120,6 +120,7 @@ Before you begin, ensure the following are installed:
   Set it using:
 
   ```bash
+  dotnet user-secrets init
   dotnet user-secrets set "DreamTrackerDbConnectionString" "Host=localhost;Port=5432;Username=postgres;Password=yourpassword;Database=DreamTracker"
   ```
 
