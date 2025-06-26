@@ -115,14 +115,6 @@ Before you begin, ensure the following are installed:
 
   > ℹ️ You do **not** need to install this manually — the `Makefile` will install it automatically if it's missing.
 
-* **User Secrets (Required)**
-  The application expects a PostgreSQL connection string stored in user secrets under the key `DreamTrackerDbConnectionString`.
-  Set it using:
-
-  ```bash
-  dotnet user-secrets init
-  dotnet user-secrets set "DreamTrackerDbConnectionString" "Host=localhost;Port=5432;Username=postgres;Password=yourpassword;Database=DreamTracker"
-  ```
 
 * **[Ollama](https://ollama.com/)** (Optional)
   Required for the **"Rewrite with AI"** feature during dream creation. You must have Ollama installed and at least one non-embedding model pulled.
@@ -139,7 +131,18 @@ cd DreamTracker
 
 ---
 
-### 2️⃣ (Optional) Configure Admin & User Passwords
+### 2️⃣ User Secrets (Required)
+  The application expects a PostgreSQL connection string stored in user secrets under the key `DreamTrackerDbConnectionString`.
+  Set it using:
+
+  ```bash
+  dotnet user-secrets init
+  dotnet user-secrets set "DreamTrackerDbConnectionString" "Host=localhost;Port=5432;Username=postgres;Password=yourpassword;Database=DreamTracker"
+  ```
+
+
+
+#### (Optional) Configure Admin & User Passwords
 
 You can set local passwords for the seeded admin and user accounts using the .NET Secret Manager:
 
