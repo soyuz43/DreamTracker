@@ -108,8 +108,6 @@ Before you begin, ensure the following are installed:
 
   The output should start with `8.` — if not, [download it here](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
 
-* **PostgreSQL**
-  Ensure `psql` is available from the command line.
 
 * **EF Core CLI (`dotnet-ef`)**
 
@@ -149,8 +147,8 @@ You can set local passwords for the seeded admin and user accounts using the .NE
 ```bash
 cd DreamTrackerAPI
 dotnet user-secrets init
-dotnet user-secrets set "AdminUser:Password" "<your_admin_password>"
-dotnet user-secrets set "DefaultUser:Password" "<your_user_password>"
+dotnet user-secrets set "AdminPassword" "<your_admin_password>"
+dotnet user-secrets set "UserPassword" "<your_user_password>"
 ```
 
 These credentials will be injected at runtime when the app seeds the database.
@@ -176,6 +174,7 @@ This command will:
 
 * Check for and install backend dependencies (`dotnet ef`)
 * Ensure `dotnet-ef` is installed globally
+* Runs the latest migrations and seed the database
 * Check for and install frontend dependencies (`npm install`)
 * Launch the backend with HTTPS (`dotnet watch run`)
 * Wait eight seconds
@@ -213,27 +212,28 @@ npm run dev
 
 ---
 
-### 5️⃣ Resetting the Database (Destructive)
+### 5️⃣ Reset Database (Destructive)
 
-If you want to delete all migrations and recreate the database:
+> **Warning:** This will delete all data and migrations. Use only in a dev environment.
+
+Before you begin, ensure you have `psql` in your PATH (required for dropping the DB) and that your connection string is configured:
+
+```bash
+cd DreamTrackerAPI
+dotnet user-secrets set "DreamTrackerDbConnectionString" "Host=localhost;Port=5432;Username=postgres;Password=your_password;Database=DreamTracker"
+```
+
+Then run:
 
 ```bash
 make migrations
 ```
 
-This command will:
+This will:
 
-* Remove EF Core migration files
-* Drop the PostgreSQL `DreamTracker` database
-* Recreate the schema from scratch
-
-Before doing this, make sure your connection string is configured via user-secrets:
-
-```bash
-dotnet user-secrets set "ConnectionStrings:DreamTrackerDb" "Host=localhost;Port=5432;Username=postgres;Password=your_password;Database=DreamTracker"
-```
-
-> ⚠️ Only use this if you're resetting your dev environment. It **deletes everything**.
+* Remove all EF Core migration files
+* Drop the `DreamTracker` PostgreSQL database
+* Recreate the initial migration and apply it, rebuilding the schema and seed data
 
 
 
