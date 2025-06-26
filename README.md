@@ -107,9 +107,8 @@ Before you begin, ensure the following are installed:
 
 The output should start with `8.` — if not, [download it here](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
 
-* **PostgreSQL**
+* **Dotnet-ef**
   Make sure `psql` is available in your terminal.
-  You do **not** need to create the database manually — the `Makefile` handles it.
 
 > ℹ️ You do **not** need to install the EF Core CLI (`dotnet-ef`) manually — the `Makefile` will install it automatically if it's missing.
 
