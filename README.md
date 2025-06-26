@@ -88,79 +88,96 @@ DreamTracker/
 ---
 
 
-## How to Run
 
-### Prerequisites
+## How to Run DreamTracker
 
-* **.NET 8.0 SDK**
-  Make sure you have the .NET 8 SDK installed. You can check by running:
+This project includes both a .NET backend and a Vite/React frontend. The fastest way to run both is with `make serve`, which handles everything for you.
 
+---
+
+### 🔧 Prerequisites
+
+Make sure these are installed before proceeding:
+
+- **.NET 8.0 SDK**  
+  Check with:
   ```bash
   dotnet --version
   ```
 
-  > If the output doesn’t start with `8.`, download it from [dotnet.microsoft.com](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+If it doesn’t start with `8.`, download it from:
+[Microsoft](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
-* **Entity Framework Core CLI tools**
-  Before running the backend for the first time, install the EF CLI globally:
+* **PostgreSQL**
+  Ensure `psql` is available from the command line.
 
-  ```bash
-  dotnet tool install --global dotnet-ef
-  ```
+> ❗ You do **not** need to manually install the EF Core CLI (`dotnet-ef`) — the Makefile will install it for you automatically if missing.
 
-  > You only need to do this once. It enables commands like `dotnet ef database update`.
+---
 
-### 1. Clone the repo
+### 1️⃣ Clone the Repo
 
 ```bash
 git clone https://github.com/soyuz43/DreamTracker.git
 cd DreamTracker
 ```
 
-#### (Optional) Configure Local Secrets (Admin credentials, etc.)
+---
 
-If desired, before running the application, you can add your own passwords by using the .NET Secret Manager. From inside the `DreamTrackerAPI` directory run:
+### 2️⃣ (Optional) Configure Admin & User Passwords
+
+You can set local passwords for the seeded admin and user accounts using the .NET Secret Manager:
 
 ```bash
+cd DreamTrackerAPI
 dotnet user-secrets init
-dotnet user-secrets set "AdminUser:Password" "<your_secure_password>"
+dotnet user-secrets set "AdminUser:Password" "<your_admin_password>"
 dotnet user-secrets set "DefaultUser:Password" "<your_user_password>"
 ```
 
-> These credentials will be used to seed admin and default user accounts on app startup.
+These credentials will be injected at runtime when the app seeds the database.
 
-> The dotnet user-secrets tool comes with the SDK — no separate install needed.
+**Default users created on startup:**
 
-The following user accounts will be created:
+| Role  | Email                                             | Password (if unset)    |
+| ----- | ------------------------------------------------- | ---------------------- |
+| Admin | [admina@strator.comx](mailto:admina@strator.comx) | `DefaultAdminPassword` |
+| User  | [lucy@dream.com](mailto:lucy@dream.com)           | `DefaultUserPassword`  |
 
-| Role  | Email                                             | Default Password (if not set) |
-| ----- | ------------------------------------------------- | ----------------------------- |
-| Admin | [admina@strator.comx](mailto:admina@strator.comx) | DefaultAdminPassword          |
-| User  | [lucy@dream.com](mailto:lucy@dream.com)           | DefaultUserPassword           |
+> `.NET user-secrets` comes with the SDK — no install required.
 
-### 2. Recommended: Use `make` to run both backend and frontend
+---
 
-The `Makefile` automates backend and frontend startup with proper sequencing.
+### 3️⃣ Easiest Way to Run: `make serve`
 
 ```bash
 make serve
 ```
 
-This will:
+This command will:
 
-* Check for frontend dependencies and install them if needed
-* Launch the backend using the `https` launch profile (`dotnet watch run --launch-profile https`)
-* Wait a few seconds to allow the backend to initialize
-* Launch the frontend dev server (`npm run dev`)
+✅ Check for and install frontend dependencies
 
-The frontend should now be running on `http://localhost:5173` and the API on `https://localhost:5001`.
+✅ Ensure `dotnet-ef` is installed globally
 
-> You can also run backend and frontend separately if needed (see below).
+✅ Launch the backend with HTTPS (`dotnet watch run`)
 
+✅ Wait a few seconds
 
-### 3. Manual Setup (optional)
+✅ Start the frontend dev server
 
-#### Backend
+Once it’s ready:
+
+* **Frontend**: [http://localhost:5173](http://localhost:5173)
+* **Backend API**: [https://localhost:5001](https://localhost:5001)
+
+> You can run the backend and frontend separately if you prefer — see below.
+
+---
+
+### 4️⃣ Manual Setup (Optional)
+
+#### 🖥️ Backend
 
 ```bash
 cd DreamTrackerAPI
@@ -168,9 +185,9 @@ dotnet ef database update
 dotnet run --launch-profile https
 ```
 
-> ⚠️ Note: Using `--launch-profile https` ensures Swagger UI and HTTPS endpoints are available. Without this flag, the app may only serve on `http://localhost:5000`.
+> Launching with `--launch-profile https` ensures Swagger UI and HTTPS endpoints work correctly.
 
-#### Frontend
+#### 🌐 Frontend
 
 ```bash
 cd DreamTracker-Client
@@ -180,7 +197,9 @@ npm run dev
 
 ---
 
-### 4. Optional: Reset Database and Recreate Migrations
+### 5️⃣ Resetting the Database (Destructive)
+
+If you want to delete all migrations and recreate the database:
 
 ```bash
 make migrations
@@ -188,16 +207,17 @@ make migrations
 
 This command will:
 
-* Delete existing EF Core migrations
-* Drop the PostgreSQL `DreamTracker` database (requires `psql` CLI access)
-* Recreate migrations and apply them via `dotnet ef database update`
+* Remove EF Core migration files
+* Drop the PostgreSQL `DreamTracker` database
+* Recreate the schema from scratch
 
-> ⚠️ **Note:** You must reconfigure your database connection string using the .NET User Secrets system before rerunning migrations:
+Before doing this, make sure your connection string is configured via user-secrets:
 
 ```bash
 dotnet user-secrets set "ConnectionStrings:DreamTrackerDb" "Host=localhost;Port=5432;Username=postgres;Password=your_password;Database=DreamTracker"
 ```
 
+> ⚠️ Only use this if you're resetting your dev environment. It **deletes everything**.
 
 
 
