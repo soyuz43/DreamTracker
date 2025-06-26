@@ -110,7 +110,7 @@ export default function CreateDream() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: ollamaModel,
-          prompt: `Rewrite the following into a structured, clear, and coherent narrative. Without adding or expanding upon the content provided. Preserve all important details. Output only the dream—no commentary or formatting:\n\n${content}`,
+          prompt: `Rewrite the following into a structured, clear, and coherent narrative. Without adding or expanding upon the content provided. Preserve all important details. Output only the dream—no commentary or formatting. Limit the response to 300 words:\n\n${content}`,
           stream: false,
         }),
       })
