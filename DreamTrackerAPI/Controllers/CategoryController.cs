@@ -61,7 +61,7 @@ public class CategoryController : ControllerBase
     }
 
     // POST: api/Category
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<CategoryDTO>> Create(CategoryCreateDTO createDto)
     {
@@ -88,7 +88,7 @@ public class CategoryController : ControllerBase
     }
 
     // PUT: api/Category/5
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, CategoryCreateDTO updateDto)
     {
@@ -111,7 +111,7 @@ public class CategoryController : ControllerBase
     }
 
     // DELETE: api/Category/5
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {

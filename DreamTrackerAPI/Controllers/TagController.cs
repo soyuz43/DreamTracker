@@ -53,7 +53,7 @@ public class TagController : ControllerBase
     }
 
     // POST: api/Tag
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<TagDTO>> Create(TagCreateDTO createDto)
     {
@@ -75,7 +75,7 @@ public class TagController : ControllerBase
     }
 
     // PUT: api/Tag/5
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, TagCreateDTO updateDto)
     {
@@ -95,7 +95,7 @@ public class TagController : ControllerBase
     }
 
     // DELETE: api/Tag/5
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {

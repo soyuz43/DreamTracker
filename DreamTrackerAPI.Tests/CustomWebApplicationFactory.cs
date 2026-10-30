@@ -1,8 +1,12 @@
 // CustomWebApplicationFactory.cs
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using DreamTrackerAPI.Data;
 
 namespace DreamTrackerAPI.Tests;
@@ -11,15 +15,15 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("Testing");
+
         builder.ConfigureServices(services =>
         {
-            // Remove the real DB context
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<DreamTrackerDbContext>));
-            if (descriptor != null)
-            {
-                services.Remove(descriptor);
-            }
+            // Remove every database provider registration (the app registers Npgsql).
+            // Only one provider may be registered per service provider, otherwise EF throws.
+            services.RemoveAll<DbContextOptions<DreamTrackerDbContext>>();
+            services.RemoveAll<DbContextOptions>();
+            services.RemoveAll<IDbContextOptionsConfiguration<DreamTrackerDbContext>>();
 
             // Add in-memory test DB context
             services.AddDbContext<DreamTrackerDbContext>(options =>
@@ -32,8 +36,13 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             using var scope = sp.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<DreamTrackerDbContext>();
             db.Database.EnsureCreated();
+        });
 
-            // Seed dummy data if needed
+        // Replace cookie authentication with a deterministic test identity.
+        builder.ConfigureTestServices(services =>
+        {
+            services.AddAuthentication(TestAuthHandler.Scheme)
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.Scheme, _ => { });
         });
     }
 }

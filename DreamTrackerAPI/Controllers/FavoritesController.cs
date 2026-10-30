@@ -8,29 +8,37 @@ using System.Security.Claims;
 
 namespace DreamTrackerAPI.Controllers;
 
-#if !DEBUG
+// Authorization is enforced unconditionally. A DEBUG-configured build must never expose
+// these endpoints without authentication.
 [Authorize]
-#endif
 [ApiController]
 [Route("api/[controller]")]
 public class FavoriteController : ControllerBase
 {
     private readonly DreamTrackerDbContext _context;
+    private readonly ILogger<FavoriteController> _logger;
 
-    public FavoriteController(DreamTrackerDbContext context)
+    public FavoriteController(DreamTrackerDbContext context, ILogger<FavoriteController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     // GET: api/Favorite
     [HttpGet("mine")]
     public async Task<ActionResult<List<FavoriteDto>>> GetMyFavorites()
     {
-        int userProfileId = await GetUserProfileId();
+        int? userProfileId = await GetUserProfileId();
+        if (userProfileId == null)
+        {
+            return Unauthorized("User profile not found.");
+        }
 
         var favorites = await _context.Favorites
             .AsNoTracking()
-            .Where(f => f.UserProfileId == userProfileId)
+            .Where(f => f.UserProfileId == userProfileId.Value)
+            // Never expose private dreams owned by another user, even if they were favorited.
+            .Where(f => f.Dream!.IsPublic || f.Dream!.UserProfileId == userProfileId.Value)
             .Include(f => f.Dream)
                 .ThenInclude(d => d!.Category!)
             .Include(f => f.Dream)
@@ -49,7 +57,9 @@ public class FavoriteController : ControllerBase
                     Content = f.Dream.Content,
                     IsPublic = f.Dream.IsPublic,
                     CreatedOn = f.Dream.CreatedOn,
-                    PublishedBy = f.Dream.UserProfile != null ? f.Dream.UserProfile.FirstName : "Anonymous",
+                    PublishedBy = (f.Dream.ShowAuthor && f.Dream.UserProfile != null)
+                        ? $"{f.Dream.UserProfile.LastName}, {f.Dream.UserProfile.FirstName}"
+                        : "Anonymous",
                     UserProfileId = f.Dream.UserProfileId,
                     Category = new CategoryDTO
                     {
@@ -72,10 +82,14 @@ public class FavoriteController : ControllerBase
     [HttpGet("status/{dreamId:int}")]
     public async Task<ActionResult<FavoriteStatusDto>> GetStatus(int dreamId)
     {
-        int userProfileId = await GetUserProfileId();
+        int? userProfileId = await GetUserProfileId();
+        if (userProfileId == null)
+        {
+            return Unauthorized("User profile not found.");
+        }
 
         bool isFavorited = await _context.Favorites
-            .AnyAsync(f => f.UserProfileId == userProfileId && f.DreamId == dreamId);
+            .AnyAsync(f => f.UserProfileId == userProfileId.Value && f.DreamId == dreamId);
 
         return Ok(new FavoriteStatusDto
         {
@@ -88,16 +102,37 @@ public class FavoriteController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<FavoriteDto>> Create(FavoriteCreateDto dto)
     {
-        int userProfileId = await GetUserProfileId();
+        int? userProfileId = await GetUserProfileId();
+        if (userProfileId == null)
+        {
+            return Unauthorized("User profile not found.");
+        }
 
-        if (await _context.Favorites.AnyAsync(f => f.UserProfileId == userProfileId && f.DreamId == dto.DreamId))
+        if (await _context.Favorites.AnyAsync(f => f.UserProfileId == userProfileId.Value && f.DreamId == dto.DreamId))
         {
             return Conflict("Already favorited.");
         }
 
+        // The caller must be able to see the dream before they can favorite it.
+        // Return NotFound() (not Forbid()) so private dreams' existence is not disclosed.
+        Dream? targetDream = await _context.Dreams
+            .AsNoTracking()
+            .SingleOrDefaultAsync(d => d.Id == dto.DreamId);
+
+        if (targetDream == null)
+        {
+            return NotFound();
+        }
+
+        bool isOwner = targetDream.UserProfileId == userProfileId.Value;
+        if (!targetDream.IsPublic && !isOwner)
+        {
+            return NotFound();
+        }
+
         var favorite = new Favorite
         {
-            UserProfileId = userProfileId,
+            UserProfileId = userProfileId.Value,
             DreamId = dto.DreamId,
             FavoritedOn = DateTime.UtcNow
         };
@@ -116,10 +151,14 @@ public class FavoriteController : ControllerBase
     [HttpDelete("{dreamId:int}")]
     public async Task<ActionResult<FavoriteDto>> Delete(int dreamId)
     {
-        int userProfileId = await GetUserProfileId();
+        int? userProfileId = await GetUserProfileId();
+        if (userProfileId == null)
+        {
+            return Unauthorized("User profile not found.");
+        }
 
         var favorite = await _context.Favorites
-            .SingleOrDefaultAsync(f => f.UserProfileId == userProfileId && f.DreamId == dreamId);
+            .SingleOrDefaultAsync(f => f.UserProfileId == userProfileId.Value && f.DreamId == dreamId);
 
         if (favorite == null) return NotFound();
 
@@ -133,51 +172,37 @@ public class FavoriteController : ControllerBase
         });
     }
 
-    private async Task<int> GetUserProfileId()
+    private async Task<int?> GetUserProfileId()
     {
-        var identityUserId = GetIdentityUserId();
-
-        Console.WriteLine($"Identity User ID from claims: {identityUserId}");
-
-        var allProfiles = await _context.UserProfiles.ToListAsync();
-        Console.WriteLine($"Total user profiles: {allProfiles.Count}");
-        foreach (var profile in allProfiles)
+        string? identityUserId = GetIdentityUserId();
+        if (identityUserId == null)
         {
-            Console.WriteLine($"UserProfile: Id={profile.Id}, IdentityUserId={profile.IdentityUserId}, Name={profile.FirstName}");
+            return null;
         }
 
+        // Targeted lookup: never load the full profile table.
         var userProfile = await _context.UserProfiles
             .AsNoTracking()
             .FirstOrDefaultAsync(up => up.IdentityUserId == identityUserId);
 
         if (userProfile == null)
         {
-            Console.WriteLine("No matching user profile found!");
-            throw new UnauthorizedAccessException("User profile not found.");
+            _logger.LogWarning("No UserProfile matched the authenticated identity.");
+            return null;
         }
 
-        Console.WriteLine($"Found UserProfile.Id: {userProfile.Id}");
+        _logger.LogDebug("Resolved UserProfile {UserProfileId} for the current identity.", userProfile.Id);
         return userProfile.Id;
     }
 
-    private string GetIdentityUserId()
+    private string? GetIdentityUserId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-        Console.WriteLine("Available claims:");
-        foreach (var c in User.Claims)
-        {
-            Console.WriteLine($" - {c.Type} : {c.Value}");
-        }
-
         if (claim == null)
         {
-#if DEBUG
-            Console.WriteLine("WARNING: No JWT found in request. Using mock IdentityUserId for development.");
-            return "mock-user-id-lucy"; // Replace with real IdentityUserId string from DB for testing
-#else
-            throw new UnauthorizedAccessException("User is not authenticated.");
-#endif
+            _logger.LogWarning("Request is missing a NameIdentifier claim.");
+            return null;
         }
 
         return claim.Value;

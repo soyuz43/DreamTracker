@@ -58,10 +58,6 @@ export default function AllDreams({ loggedInUser }) {
 
   const handleEdit = (dream) => setEditingDream(dream);
   const handleCloseEdit = () => setEditingDream(null);
-  const handleUpdateDream = (dreamId, updatedData) => {
-    // invalidation could be better, but local update for now
-    setEditingDream(null);
-  };
 
   const handleDelete = async (id) => {
     try {
@@ -226,7 +222,6 @@ export default function AllDreams({ loggedInUser }) {
         dream={editingDream}
         isOpen={!!editingDream}
         onClose={handleCloseEdit}
-        onUpdate={handleUpdateDream}
       />
     </section>
   );
