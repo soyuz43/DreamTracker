@@ -59,7 +59,10 @@ public class TaxonomyAuthorizationTests : IClassFixture<CustomWebApplicationFact
     [Fact]
     public async Task GetCategories_RemainsPubliclyReadable()
     {
-        var response = await _client.GetAsync("/api/Category");
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/Category");
+        request.Headers.Add(TestAuthHandler.AnonymousHeader, "true");
+
+        var response = await _client.SendAsync(request);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }

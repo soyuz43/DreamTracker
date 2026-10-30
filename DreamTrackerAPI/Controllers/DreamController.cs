@@ -23,10 +23,15 @@ public class DreamController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<DreamDTO>>> GetAll()
     {
+        // Admins may see every dream. Authenticated users also see their own private dreams;
+        // anonymous users see public dreams only.
+        bool isAdmin = User.IsInRole("Admin");
+
         // Resolve the current user's profile (if authenticated) so we can include their private dreams.
+        // Admins bypass the visibility filter entirely, so the lookup is skipped for them.
         int? currentUserProfileId = null;
         string? identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (identityUserId != null)
+        if (!isAdmin && identityUserId != null)
         {
             UserProfile? profile = await _context.UserProfiles
                 .AsNoTracking()
@@ -40,15 +45,17 @@ public class DreamController : ControllerBase
             .Include(d => d.DreamTags!).ThenInclude(dt => dt.Tag)
             .AsNoTracking();
 
-        // Authenticated users also see their own private dreams; anonymous users see public dreams only.
-        if (currentUserProfileId.HasValue)
+        if (!isAdmin)
         {
-            int profileId = currentUserProfileId.Value;
-            query = query.Where(d => d.IsPublic || d.UserProfileId == profileId);
-        }
-        else
-        {
-            query = query.Where(d => d.IsPublic);
+            if (currentUserProfileId.HasValue)
+            {
+                int profileId = currentUserProfileId.Value;
+                query = query.Where(d => d.IsPublic || d.UserProfileId == profileId);
+            }
+            else
+            {
+                query = query.Where(d => d.IsPublic);
+            }
         }
 
         var dreams = await query

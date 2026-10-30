@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using DreamTrackerAPI.Models.DTOs;
 
 namespace DreamTrackerAPI.Tests;
 
@@ -28,9 +29,11 @@ public class DreamAuthorizationTests : IClassFixture<CustomWebApplicationFactory
     }
 
     [Fact]
-    public async Task GetById_PrivateDreamOfAnotherUser_AsAdmin_ReturnsOk()
+    public async Task GetById_AnotherUsersPrivateDream_AsAdmin_ReturnsOk()
     {
-        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/Dream/5");
+        // Seeded dream 8 is IsPublic = false and owned by Lucy's UserProfile (Id 2),
+        // so it exercises the admin bypass rather than the owner check.
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/Dream/8");
         request.Headers.Add(TestAuthHandler.RolesHeader, "Admin");
         request.Headers.Add(TestAuthHandler.IdentityHeader, TestAuthHandler.AdminIdentity);
 
@@ -76,5 +79,36 @@ public class DreamAuthorizationTests : IClassFixture<CustomWebApplicationFactory
         var response = await _client.SendAsync(request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task GetAll_AsAdmin_IncludesAnotherUsersPrivateDream()
+    {
+        // Seeded dream 8 is IsPublic = false and owned by Lucy's UserProfile (Id 2).
+        // Admins must still see it in the list so the admin delete buttons remain usable.
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/Dream");
+        request.Headers.Add(TestAuthHandler.RolesHeader, "Admin");
+        request.Headers.Add(TestAuthHandler.IdentityHeader, TestAuthHandler.AdminIdentity);
+
+        var response = await _client.SendAsync(request);
+        var dreams = await response.Content.ReadFromJsonAsync<List<DreamDTO>>();
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        dreams.Should().NotBeNull();
+        dreams!.Should().Contain(d => d.Id == 8);
+    }
+
+    [Fact]
+    public async Task GetAll_AsNonAdmin_ExcludesAnotherUsersPrivateDream()
+    {
+        // The default test identity is Lucy (UserProfile Id 2); dream 5 is the admin's
+        // private dream and must not appear in her listing.
+        var response = await _client.GetAsync("/api/Dream");
+        var dreams = await response.Content.ReadFromJsonAsync<List<DreamDTO>>();
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        dreams.Should().NotBeNull();
+        dreams!.Should().NotContain(d => d.Id == 5);
+        dreams.Should().Contain(d => d.Id == 8);
     }
 }
