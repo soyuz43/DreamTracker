@@ -109,9 +109,11 @@ public class DreamController : ControllerBase
         }
 
         // Anonymous callers only see public dreams; authenticated callers also see their own.
-        // Return NotFound() (not Forbid()) so private dreams' existence is not disclosed.
+        // Admins may access any dream. Return NotFound() (not Forbid()) so private dreams'
+        // existence is not disclosed.
         bool isOwner = currentUserProfileId.HasValue && d.UserProfileId == currentUserProfileId.Value;
-        if (!d.IsPublic && !isOwner)
+        bool isAdmin = User.IsInRole("Admin");
+        if (!d.IsPublic && !isOwner && !isAdmin)
         {
             return NotFound();
         }
