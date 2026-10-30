@@ -37,6 +37,8 @@ public class FavoriteController : ControllerBase
         var favorites = await _context.Favorites
             .AsNoTracking()
             .Where(f => f.UserProfileId == userProfileId.Value)
+            // Never expose private dreams owned by another user, even if they were favorited.
+            .Where(f => f.Dream!.IsPublic || f.Dream!.UserProfileId == userProfileId.Value)
             .Include(f => f.Dream)
                 .ThenInclude(d => d!.Category!)
             .Include(f => f.Dream)
@@ -55,7 +57,9 @@ public class FavoriteController : ControllerBase
                     Content = f.Dream.Content,
                     IsPublic = f.Dream.IsPublic,
                     CreatedOn = f.Dream.CreatedOn,
-                    PublishedBy = f.Dream.UserProfile != null ? f.Dream.UserProfile.FirstName : "Anonymous",
+                    PublishedBy = (f.Dream.ShowAuthor && f.Dream.UserProfile != null)
+                        ? $"{f.Dream.UserProfile.LastName}, {f.Dream.UserProfile.FirstName}"
+                        : "Anonymous",
                     UserProfileId = f.Dream.UserProfileId,
                     Category = new CategoryDTO
                     {
@@ -107,6 +111,23 @@ public class FavoriteController : ControllerBase
         if (await _context.Favorites.AnyAsync(f => f.UserProfileId == userProfileId.Value && f.DreamId == dto.DreamId))
         {
             return Conflict("Already favorited.");
+        }
+
+        // The caller must be able to see the dream before they can favorite it.
+        // Return NotFound() (not Forbid()) so private dreams' existence is not disclosed.
+        Dream? targetDream = await _context.Dreams
+            .AsNoTracking()
+            .SingleOrDefaultAsync(d => d.Id == dto.DreamId);
+
+        if (targetDream == null)
+        {
+            return NotFound();
+        }
+
+        bool isOwner = targetDream.UserProfileId == userProfileId.Value;
+        if (!targetDream.IsPublic && !isOwner)
+        {
+            return NotFound();
         }
 
         var favorite = new Favorite
