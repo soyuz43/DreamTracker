@@ -66,3 +66,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Exposed so the test project's WebApplicationFactory<Program> can reference it.
+public partial class Program { }
