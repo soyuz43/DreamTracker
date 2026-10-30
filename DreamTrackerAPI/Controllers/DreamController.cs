@@ -23,12 +23,36 @@ public class DreamController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<DreamDTO>>> GetAll()
     {
-        var dreams = await _context.Dreams
+        // Resolve the current user's profile (if authenticated) so we can include their private dreams.
+        int? currentUserProfileId = null;
+        string? identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (identityUserId != null)
+        {
+            UserProfile? profile = await _context.UserProfiles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(up => up.IdentityUserId == identityUserId);
+            currentUserProfileId = profile?.Id;
+        }
+
+        IQueryable<Dream> query = _context.Dreams
             .Include(d => d.UserProfile)
             .Include(d => d.Category)
             .Include(d => d.DreamTags!).ThenInclude(dt => dt.Tag)
+            .AsNoTracking();
+
+        // Authenticated users also see their own private dreams; anonymous users see public dreams only.
+        if (currentUserProfileId.HasValue)
+        {
+            int profileId = currentUserProfileId.Value;
+            query = query.Where(d => d.IsPublic || d.UserProfileId == profileId);
+        }
+        else
+        {
+            query = query.Where(d => d.IsPublic);
+        }
+
+        var dreams = await query
             .OrderByDescending(d => d.CreatedOn)
-            .AsNoTracking()
             .ToListAsync();
 
         var dtos = dreams.Select(d => new DreamDTO
@@ -61,6 +85,17 @@ public class DreamController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<DreamDTO>> GetById(int id)
     {
+        // Resolve the current user's profile (if authenticated) so we can authorize access to private dreams.
+        int? currentUserProfileId = null;
+        string? identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (identityUserId != null)
+        {
+            UserProfile? profile = await _context.UserProfiles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(up => up.IdentityUserId == identityUserId);
+            currentUserProfileId = profile?.Id;
+        }
+
         Dream? d = await _context.Dreams
             .Include(d => d.UserProfile)
             .Include(d => d.Category)
@@ -69,6 +104,14 @@ public class DreamController : ControllerBase
             .SingleOrDefaultAsync(d => d.Id == id);
 
         if (d == null)
+        {
+            return NotFound();
+        }
+
+        // Anonymous callers only see public dreams; authenticated callers also see their own.
+        // Return NotFound() (not Forbid()) so private dreams' existence is not disclosed.
+        bool isOwner = currentUserProfileId.HasValue && d.UserProfileId == currentUserProfileId.Value;
+        if (!d.IsPublic && !isOwner)
         {
             return NotFound();
         }
@@ -184,6 +227,22 @@ public class DreamController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, DreamCreateDTO updateDto)
     {
+        // 1. Get current user's IdentityUserId (GUID string)
+        string? identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (identityUserId == null)
+        {
+            return Unauthorized("User not recognized.");
+        }
+
+        // 2. Look up their UserProfile
+        UserProfile? profile = await _context.UserProfiles
+            .SingleOrDefaultAsync(up => up.IdentityUserId == identityUserId);
+        if (profile == null)
+        {
+            return Unauthorized("User profile not found.");
+        }
+
+        // 3. Find the dream
         Dream? dream = await _context.Dreams
             .Include(d => d.DreamTags!)
             .SingleOrDefaultAsync(d => d.Id == id);
@@ -191,6 +250,15 @@ public class DreamController : ControllerBase
         if (dream == null)
         {
             return NotFound();
+        }
+
+        // 4. Check role and ownership
+        bool isAdmin = User.IsInRole("Admin");
+        bool isOwner = dream.UserProfileId == profile.Id;
+
+        if (!isAdmin && !isOwner)
+        {
+            return Forbid();
         }
 
         dream.Title = updateDto.Title!;
