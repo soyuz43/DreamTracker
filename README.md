@@ -30,7 +30,7 @@ Most dream journaling apps focus solely on private reflection. DreamTracker goes
 ### Backend
 - **ASP.NET Core Web API**  
 - **Entity Framework Core**  
-- **SQL Server**  
+- **PostgreSQL**  
 - **Cookie-based authentication using ASP.NET Identity**
 
 ### Tooling
@@ -72,16 +72,18 @@ Most dream journaling apps focus solely on private reflection. DreamTracker goes
 
 DreamTracker/
 ├── DreamTrackerAPI/         # .NET Core Web API backend
-│   ├── Controllers/         # Auth, Dream, Category, Tag
+│   ├── Controllers/         # Auth, Dream, Category, Tag, Favorite, Profile
 │   ├── Models/              # EF Core entities & DTOs
 │   └── Migrations/          # EF Core schema history
 │
-└── DreamTracker-Client/     # React frontend
-├── components/
-│   ├── auth/            # Login/Register
-│   ├── dream/           # AllDreams, DreamCard, MyDreams, etc.
-│   └── profile/         # Profile.jsx
-└── managers/            # Fetch wrappers (auth, dream, tag, etc.)
+└── DreamTracker-Client/     # React frontend (Vite)
+    └── src/
+        ├── components/
+        │   ├── auth/            # Login/Register/AuthorizedRoute
+        │   ├── Dream/           # AllDreams, DreamCard, MyDreams, etc.
+        │   ├── favorites/       # Favorites.jsx
+        │   └── profile/         # Profile.jsx
+        └── managers/            # Fetch wrappers (auth, dream, tag, etc.)
 
 ```
 
